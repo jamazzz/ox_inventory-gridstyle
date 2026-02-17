@@ -17,6 +17,7 @@ import { Locale } from '../../store/locale';
 import { getItemSizes } from '../../helpers/itemSizeCache';
 import { fetchNui } from '../../utils/fetchNui';
 import { isEnvBrowser } from '../../utils/misc';
+import { saveBinding } from '../../helpers/hotbarPersistence';
 
 interface GridItemProps {
   item: SlotWithItem;
@@ -88,8 +89,10 @@ const GridItem: React.FC<GridItemProps> = ({ item, inventoryType, inventoryId, i
         const currentSlotId = store.getState().inventory.hotbar[hotbarSlot];
         if (currentSlotId === item.slot) {
           dispatch(clearHotbar(hotbarSlot));
+          saveBinding(hotbarSlot, null);
         } else {
           dispatch(assignHotbar({ hotbarSlot, itemSlot: item.slot }));
+          saveBinding(hotbarSlot, item);
         }
       }
     };
@@ -329,13 +332,19 @@ const GridItem: React.FC<GridItemProps> = ({ item, inventoryType, inventoryId, i
                     : `${item.weight.toLocaleString('en-us', { minimumFractionDigits: 0 })}g`
                   : ''}
               </span>
-              {item.count > 1 && (
-                <span className="grid-item-count">
-                  {activeSplit
-                    ? `${activeSplit}/${item.count}`
-                    : `${item.count}x`}
-                </span>
-              )}
+              {(() => {
+                const stackSize = Items[item.name]?.stackSize ?? item.stackSize;
+                if (activeSplit) {
+                  return <span className="grid-item-count">{`${activeSplit}/${item.count}`}</span>;
+                }
+                if (stackSize) {
+                  return <span className="grid-item-count">{`${item.count}/${stackSize}`}</span>;
+                }
+                if (item.count > 1) {
+                  return <span className="grid-item-count">{`${item.count}x`}</span>;
+                }
+                return null;
+              })()}
             </div>
           )}
 

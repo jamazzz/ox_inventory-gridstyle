@@ -81,7 +81,7 @@ Every item in `data/items.lua` requires `width` and `height` fields that define 
 -- Medium item (2x2)
 ['armour'] = {
     label = 'Bulletproof Vest',
-    weight = 30q00,
+    weight = 3000,
     width = 2,
     height = 2,
     stack = false,
@@ -96,6 +96,55 @@ Every item in `data/items.lua` requires `width` and `height` fields that define 
     stack = false,
 },
 ```
+
+## Stack Limits
+
+By default, stackable items (`stack = true` or `stack` omitted) can stack infinitely in a single grid cell. You can optionally add a `stackSize` field to limit how many can fit in one stack. When the stack is full, additional items overflow into a new grid cell.
+
+```lua
+-- Lockpick: stacks up to 15 per cell
+['lockpick'] = {
+    label = 'Lockpick',
+    weight = 50,
+    width = 1,
+    height = 1,
+    stackSize = 15,
+},
+
+-- Bandage: stacks up to 20 per cell
+['bandage'] = {
+    label = 'Bandage',
+    weight = 115,
+    width = 1,
+    height = 1,
+    stackSize = 20,
+},
+
+-- Money: no stackSize = unlimited stacking (default behavior)
+['money'] = {
+    label = 'Money',
+    width = 1,
+    height = 1,
+},
+
+-- Phone: stack = false = no stacking at all
+['phone'] = {
+    label = 'Phone',
+    weight = 190,
+    width = 1,
+    height = 1,
+    stack = false,
+},
+```
+
+| Configuration | Behavior |
+|---------------|----------|
+| `stack` omitted, no `stackSize` | Unlimited stacking (default) |
+| `stack = true`, no `stackSize` | Unlimited stacking |
+| `stack = true`, `stackSize = 15` | Max 15 per slot, overflow to new slot |
+| `stack = false` | No stacking, each item gets its own slot |
+
+When a stack limit is set, the inventory displays the current count and max (e.g., `12/15`) instead of just `12x`.
 
 ## Weapon Sizing
 
@@ -333,13 +382,20 @@ Add these to your `server.cfg` **before** `ensure ox_inventory`.
 
 ```cfg
 # Player inventory grid size (default: 10 wide, 7 tall)
-set inventory:gridwidth 10
-set inventory:gridheight 7
+setr inventory:gridwidth 10
+setr inventory:gridheight 7
+
+# Slot-to-grid ratio for containers (default: 1 = 1 row per slot row)
+# How many grid rows each row of container slots gets.
+# Slots fill left to right using gridwidth, then wrap to the next row.
+# Example with gridwidth 10, slotratio 1: 23 slots → 10x3
+# Example with gridwidth 10, slotratio 2: 23 slots → 10x6
+setr inventory:slotratio 1
 
 # Enable the Tarkov-style search mechanic (default: 0 / off)
 # When enabled, items in stashes, trunks, gloveboxes, drops, dumpsters,
 # containers, and police evidence must be searched before they are visible
-set inventory:searchable 0
+setr inventory:searchable 0
 ```
 
 ## Searchable Inventories

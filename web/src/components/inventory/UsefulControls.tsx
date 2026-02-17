@@ -1,5 +1,6 @@
 import { Locale } from '../../store/locale';
-import React from 'react';
+import React, { useRef, useState } from 'react';
+import { getScale, setScaleValue, applyScale, MIN_SCALE, MAX_SCALE, STEP, DEFAULT_SCALE } from '../../helpers/uiScale';
 
 interface Props {
   infoVisible: boolean;
@@ -36,7 +37,31 @@ const CONTROL_SECTIONS = [
 ];
 
 const UsefulControls: React.FC<Props> = ({ infoVisible, setInfoVisible }) => {
+  const [displayPercent, setDisplayPercent] = useState(() => Math.round(getScale() * 100));
+  const [showReset, setShowReset] = useState(() => getScale() !== DEFAULT_SCALE);
+  const sliderRef = useRef<HTMLInputElement>(null);
+
   if (!infoVisible) return null;
+
+  const handleInput = () => {
+    if (!sliderRef.current) return;
+    const val = parseFloat(sliderRef.current.value);
+    setScaleValue(val);
+    setDisplayPercent(Math.round(val * 100));
+    setShowReset(val !== DEFAULT_SCALE);
+  };
+
+  const handleCommit = () => {
+    applyScale();
+  };
+
+  const handleReset = () => {
+    setScaleValue(DEFAULT_SCALE);
+    applyScale();
+    setDisplayPercent(Math.round(DEFAULT_SCALE * 100));
+    setShowReset(false);
+    if (sliderRef.current) sliderRef.current.value = String(DEFAULT_SCALE);
+  };
 
   return (
     <div className="useful-controls-dialog-overlay" onMouseDown={() => setInfoVisible(false)}>
@@ -70,6 +95,34 @@ const UsefulControls: React.FC<Props> = ({ infoVisible, setInfoVisible }) => {
               </div>
             </div>
           ))}
+          <div className="uc-section" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.03)' }}>
+            <div className="uc-section-label">
+              {Locale.ui_settings || 'Settings'}
+            </div>
+            <div className="uc-scale-row">
+              <span className="uc-scale-label">UI Scale</span>
+              <div className="uc-scale-control">
+                <input
+                  ref={sliderRef}
+                  className="uc-scale-slider"
+                  type="range"
+                  min={MIN_SCALE}
+                  max={MAX_SCALE}
+                  step={STEP}
+                  defaultValue={getScale()}
+                  onInput={handleInput}
+                  onPointerUp={handleCommit}
+                  onChange={handleCommit}
+                />
+                <span className="uc-scale-value">{displayPercent}%</span>
+                <button
+                  className="uc-scale-reset"
+                  onClick={handleReset}
+                  style={{ visibility: showReset ? 'visible' : 'hidden' }}
+                >Reset</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

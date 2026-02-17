@@ -411,7 +411,7 @@ function Inventory.SetSlot(inv, item, count, metadata, slot, skipGridPlacement)
 		local prevGridX = currentSlot and currentSlot.gridX
 		local prevGridY = currentSlot and currentSlot.gridY
 		local prevGridRotated = currentSlot and currentSlot.gridRotated
-		currentSlot = {name = item.name, label = item.label, weight = item.weight, slot = slot, count = newCount, description = item.description, metadata = metadata, stack = item.stack, close = item.close, gridX = prevGridX, gridY = prevGridY, gridRotated = prevGridRotated}
+		currentSlot = {name = item.name, label = item.label, weight = item.weight, slot = slot, count = newCount, description = item.description, metadata = metadata, stack = item.stack, close = item.close, stackSize = item.stackSize, gridX = prevGridX, gridY = prevGridY, gridRotated = prevGridRotated}
 		local slotWeight = Inventory.SlotWeight(item, currentSlot)
 		currentSlot.weight = slotWeight
 		newWeight += slotWeight
@@ -612,7 +612,7 @@ end, true)
 function Inventory.Create(id, label, invType, slots, weight, maxWeight, owner, items, groups, dbId)
 	if invType == 'player' and hasActiveInventory(id, owner) then return end
 
-	local gridWidth, gridHeight = GridUtils.GetDimensions(invType)
+	local gridWidth, gridHeight = GridUtils.GetDimensions(invType, slots)
 
 	local self = {
 		id = id,
@@ -905,7 +905,7 @@ local function generateItems(inv, invType, items)
 			local h = item.height or 1
 			local gx, gy, rotated = GridUtils.FindFirstFit(grid, gridWidth, gridHeight, w, h)
 
-			returnData[i] = {name = item.name, label = item.label, weight = weight, slot = i, count = count, description = item.description, metadata = metadata, stack = item.stack, close = item.close, gridX = gx or 0, gridY = gy or 0, gridRotated = rotated or false}
+			returnData[i] = {name = item.name, label = item.label, weight = weight, slot = i, count = count, description = item.description, metadata = metadata, stack = item.stack, stackSize = item.stackSize, close = item.close, gridX = gx or 0, gridY = gy or 0, gridRotated = rotated or false}
 
 			if gx then
 				local ew, eh = w, h
@@ -965,7 +965,7 @@ function Inventory.Load(id, invType, owner)
 				v.metadata = Items.CheckMetadata(v.metadata or {}, item, v.name, ostime)
 				local slotWeight = Inventory.SlotWeight(item, v)
 				weight += slotWeight
-				returnData[v.slot] = {name = item.name, label = item.label, weight = slotWeight, slot = v.slot, count = v.count, description = item.description, metadata = v.metadata, stack = item.stack, close = item.close, gridX = v.gridX, gridY = v.gridY, gridRotated = v.gridRotated}
+				returnData[v.slot] = {name = item.name, label = item.label, weight = slotWeight, slot = v.slot, count = v.count, description = item.description, metadata = v.metadata, stack = item.stack, stackSize = item.stackSize, close = item.close, gridX = v.gridX, gridY = v.gridY, gridRotated = v.gridRotated}
 			end
 		end
 
@@ -1305,7 +1305,9 @@ function Inventory.AddItem(inv, item, count, metadata, slot, cb)
 		slotMetadata, slotCount = Items.Metadata(inv.id, item, metadata and table.clone(metadata) or {}, count)
 
 		if not slotData or (item.stack and slotData.name == item.name and table.matches(slotData.metadata, slotMetadata)) then
-			toSlot = slot
+			if not item.stackSize or not slotData or (slotData.count + count) <= item.stackSize then
+				toSlot = slot
+			end
 		end
 	end
 
@@ -1317,10 +1319,14 @@ function Inventory.AddItem(inv, item, count, metadata, slot, cb)
 		slotMetadata, slotCount = Items.Metadata(inv.id, item, metadata and table.clone(metadata) or {}, count)
 
 		if isGrid then
+			local stackSize = item.stack and item.stackSize or nil
+
 			for k, slotData in pairs(items) do
 				if item.stack and slotData and slotData.name == item.name and table.matches(slotData.metadata, slotMetadata) then
-					toSlot = k
-					break
+					if not stackSize or (slotData.count + count) <= stackSize then
+						toSlot = k
+						break
+					end
 				end
 			end
 
@@ -1370,8 +1376,55 @@ function Inventory.AddItem(inv, item, count, metadata, slot, cb)
 					end
 
 					if #toSlot == 0 then toSlot = nil end
-				else
+				elseif stackSize then
+					toSlot = {}
+					local remaining = count
+
+					for k, slotData in pairs(items) do
+						if remaining <= 0 then break end
+						if slotData and slotData.name == item.name and table.matches(slotData.metadata, slotMetadata) then
+							local canAdd = stackSize - slotData.count
+							if canAdd > 0 then
+								local addCount = math.min(remaining, canAdd)
+								toSlot[#toSlot + 1] = { slot = k, count = addCount, metadata = slotMetadata }
+								remaining = remaining - addCount
+							end
+						end
+					end
+
+					while remaining > 0 do
+						local newSlotCount = math.min(remaining, stackSize)
 						local gx, gy, rotated = GridUtils.FindFirstFit(grid, gridWidth, gridHeight, w, h)
+						if not gx then break end
+
+						local newSlot = 1
+						for k2 in pairs(items) do
+							if type(k2) == 'number' and k2 >= newSlot then
+								newSlot = k2 + 1
+							end
+						end
+						for _, ts in ipairs(toSlot) do
+							if ts.slot >= newSlot then newSlot = ts.slot + 1 end
+						end
+
+						toSlot[#toSlot + 1] = { slot = newSlot, count = newSlotCount, metadata = slotMetadata, gridX = gx, gridY = gy, gridRotated = rotated or false }
+
+						local ew, eh = w, h
+						if rotated then ew, eh = eh, ew end
+						for dy = 0, eh - 1 do
+							for dx = 0, ew - 1 do
+								if grid[gy + dy] and grid[gy + dy][gx + dx] ~= nil then
+									grid[gy + dy][gx + dx] = newSlot
+								end
+							end
+						end
+
+						remaining = remaining - newSlotCount
+					end
+
+					if #toSlot == 0 then toSlot = nil end
+				else
+					local gx, gy, rotated = GridUtils.FindFirstFit(grid, gridWidth, gridHeight, w, h)
 					if gx then
 						local newSlot = 1
 						for k2 in pairs(items) do
@@ -1385,12 +1438,16 @@ function Inventory.AddItem(inv, item, count, metadata, slot, cb)
 				end
 			end
 		else
-				for i = 1, inv.slots do
+			local stackSize = item.stack and item.stackSize or nil
+
+			for i = 1, inv.slots do
 				local slotData = items[i]
 
 				if item.stack and slotData ~= nil and slotData.name == item.name and table.matches(slotData.metadata, slotMetadata) then
-					toSlot = i
-					break
+					if not stackSize or (slotData.count + count) <= stackSize then
+						toSlot = i
+						break
+					end
 				elseif not item.stack and not slotData then
 					if not toSlot then toSlot = {} end
 
@@ -1405,6 +1462,31 @@ function Inventory.AddItem(inv, item, count, metadata, slot, cb)
 				elseif not toSlot and not slotData then
 					toSlot = i
 				end
+			end
+
+			if not toSlot and stackSize then
+				toSlot = {}
+				local remaining = count
+
+				for i = 1, inv.slots do
+					if remaining <= 0 then break end
+					local slotData = items[i]
+
+					if slotData and slotData.name == item.name and table.matches(slotData.metadata, slotMetadata) then
+						local canAdd = stackSize - slotData.count
+						if canAdd > 0 then
+							local addCount = math.min(remaining, canAdd)
+							toSlot[#toSlot + 1] = { slot = i, count = addCount, metadata = slotMetadata }
+							remaining = remaining - addCount
+						end
+					elseif not slotData and remaining > 0 then
+						local newSlotCount = math.min(remaining, stackSize)
+						toSlot[#toSlot + 1] = { slot = i, count = newSlotCount, metadata = slotMetadata }
+						remaining = remaining - newSlotCount
+					end
+				end
+
+				if #toSlot == 0 then toSlot = nil end
 			end
 		end
 	end
@@ -1743,18 +1825,48 @@ function Inventory.CanCarryAmount(inv, item)
 			local gridAmount = 0
 
 			if item.stack then
-				local hasStack = false
-				for _, slotData in pairs(inv.items) do
-					if slotData and slotData.name == item.name then
-						hasStack = true
-						break
-					end
-				end
+				local stackSize = item.stackSize
 
-				if hasStack then
-					gridAmount = weightAmount
+				if stackSize then
+					local existingCapacity = 0
+					for _, slotData in pairs(inv.items) do
+						if slotData and slotData.name == item.name then
+							existingCapacity = existingCapacity + (stackSize - slotData.count)
+						end
+					end
+
+					local newStackCapacity = 0
+					while existingCapacity + newStackCapacity < weightAmount do
+						local gx, gy, rotated = GridUtils.FindFirstFit(grid, gridWidth, gridHeight, w, h)
+						if not gx then break end
+						newStackCapacity = newStackCapacity + stackSize
+
+						local ew, eh = w, h
+						if rotated then ew, eh = eh, ew end
+						for dy = 0, eh - 1 do
+							for dx = 0, ew - 1 do
+								if grid[gy + dy] and grid[gy + dy][gx + dx] ~= nil then
+									grid[gy + dy][gx + dx] = true
+								end
+							end
+						end
+					end
+
+					gridAmount = existingCapacity + newStackCapacity
 				else
-					gridAmount = GridUtils.FindFirstFit(grid, gridWidth, gridHeight, w, h) and weightAmount or 0
+					local hasStack = false
+					for _, slotData in pairs(inv.items) do
+						if slotData and slotData.name == item.name then
+							hasStack = true
+							break
+						end
+					end
+
+					if hasStack then
+						gridAmount = weightAmount
+					else
+						gridAmount = GridUtils.FindFirstFit(grid, gridWidth, gridHeight, w, h) and weightAmount or 0
+					end
 				end
 			else
 				for _ = 1, weightAmount do
@@ -2272,6 +2384,16 @@ lib.callback.register('ox_inventory:swapItems', function(source, data)
 				end
 
 			elseif toData and toData.name == fromData.name and table.matches(toData.metadata, fromData.metadata) then
+				local itemDef = Items(toData.name)
+				local stackSize = itemDef and itemDef.stackSize
+
+				if stackSize then
+					local canAdd = stackSize - toData.count
+					if canAdd <= 0 then return end
+					data.count = math.min(data.count, canAdd)
+					hookPayload.count = data.count
+				end
+
 				toData.count += data.count
 				fromData.count -= data.count
 				local toSlotWeight = Inventory.SlotWeight(Items(toData.name), toData)
@@ -2623,6 +2745,7 @@ lib.callback.register('ox_inventory:sortInventory', function(source, data)
 	for name, group in pairs(groups) do
 		local itemData = Items(name)
 		local isStackable = itemData and itemData.stack
+		local stackSize = itemData and itemData.stackSize
 
 		if isStackable and #group > 1 then
 			local metaGroups = {}
@@ -2642,19 +2765,43 @@ lib.callback.register('ox_inventory:sortInventory', function(source, data)
 			end
 
 			for _, mg in ipairs(metaGroups) do
-				local target = mg[1]
-				local totalCount = target.item.count or 1
-
-				for i = 2, #mg do
-					totalCount = totalCount + (mg[i].item.count or 1)
-					removedSlots[mg[i].slot] = true
+				local totalCount = 0
+				for _, entry in ipairs(mg) do
+					totalCount = totalCount + (entry.item.count or 1)
 				end
 
-				if totalCount ~= (target.item.count or 1) then
-					mergeUpdates[target.slot] = totalCount
-				end
+				if stackSize then
+					for _, entry in ipairs(mg) do
+						removedSlots[entry.slot] = true
+					end
 
-				merged[#merged + 1] = target
+					local remaining = totalCount
+					local entryIdx = 1
+					while remaining > 0 and entryIdx <= #mg do
+						local slotCount = math.min(remaining, stackSize)
+						local entry = mg[entryIdx]
+						removedSlots[entry.slot] = nil
+
+						if slotCount ~= (entry.item.count or 1) then
+							mergeUpdates[entry.slot] = slotCount
+						end
+						entry.item.count = slotCount
+						merged[#merged + 1] = entry
+						remaining = remaining - slotCount
+						entryIdx = entryIdx + 1
+					end
+				else
+					local target = mg[1]
+					for i = 2, #mg do
+						removedSlots[mg[i].slot] = true
+					end
+
+					if totalCount ~= (target.item.count or 1) then
+						mergeUpdates[target.slot] = totalCount
+					end
+					target.item.count = totalCount
+					merged[#merged + 1] = target
+				end
 			end
 		else
 			for _, entry in ipairs(group) do

@@ -58,19 +58,23 @@ export const onDrop = (source: DragSource, target?: DropTarget) => {
     })
   );
 
-  isSlotWithItem(targetSlot, true)
-    ? sourceData.stack && canStack(sourceSlot, targetSlot)
-      ? store.dispatch(
-          stackSlots({
-            ...data,
-            toSlot: targetSlot,
-          })
-        )
-      : store.dispatch(
-          swapSlots({
-            ...data,
-            toSlot: targetSlot,
-          })
-        )
-    : store.dispatch(moveSlots(data));
+  if (isSlotWithItem(targetSlot, true)) {
+    if (sourceData.stack && canStack(sourceSlot, targetSlot)) {
+      let stackCount = count;
+      const maxStack = sourceData.stackSize ?? (targetSlot as SlotWithItem).stackSize;
+      if (maxStack) {
+        const remaining = maxStack - (targetSlot as SlotWithItem).count;
+        if (remaining <= 0) {
+          store.dispatch(swapSlots({ ...data, toSlot: targetSlot }));
+          return;
+        }
+        stackCount = Math.min(stackCount, remaining);
+      }
+      store.dispatch(stackSlots({ ...data, toSlot: targetSlot, count: stackCount }));
+    } else {
+      store.dispatch(swapSlots({ ...data, toSlot: targetSlot }));
+    }
+  } else {
+    store.dispatch(moveSlots(data));
+  }
 };

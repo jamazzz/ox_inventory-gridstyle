@@ -122,7 +122,15 @@ local dimensionDefaults = {
     crafting = { 10, 7 },
 }
 
-function GridUtils.GetDimensions(invType)
+function GridUtils.GetDimensions(invType, slots)
+    if slots and (invType == 'container') then
+        local ratio = shared.slotratio or 1
+        local cols = shared.gridwidth or 10
+        local w = math.min(slots, cols)
+        local h = math.ceil(slots / w) * ratio
+        return w, h
+    end
+
     local dims = dimensionDefaults[invType]
     if dims then return dims[1], dims[2] end
     return shared.gridwidth or 10, shared.gridheight or 7

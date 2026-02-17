@@ -36,6 +36,7 @@ import {
   SwapResult,
 } from '../../helpers/gridUtils';
 import { DEFAULT_GRID_DIMENSIONS } from '../../helpers/gridConstants';
+import { getCellSizePx } from '../../helpers/uiScale';
 import { clearSplit } from '../../store/contextMenu';
 import { validateMove } from '../../thunks/validateItems';
 import { buyItem } from '../../thunks/buyItem';
@@ -64,7 +65,7 @@ function pixelToGridCell(
 
   if (relX < 0 || relY < 0) return null;
 
-  const cellSize = window.innerHeight * 0.058;
+  const cellSize = getCellSizePx();
   const gap = 2;
 
   const cellX = Math.min(Math.floor(relX / (cellSize + gap)), gridWidth - 1);
@@ -265,11 +266,15 @@ const GridInventory: React.FC<GridInventoryProps> = ({ inventory, onHeaderMouseD
               const slotId = occupancy[ay]?.[ax];
               if (slotId !== null && slotId !== undefined) {
                 const existing = inventory.items.find((i) => i.slot === slotId);
-                if (existing && isSlotWithItem(existing) && existing.name === itemName && Items[itemName]?.stack) {
-                  stackSlot = existing.slot;
-                  toGridX = existing.gridX;
-                  toGridY = existing.gridY;
-                  rotated = existing.rotated;
+                const existingItemData = Items[itemName];
+                if (existing && isSlotWithItem(existing) && existing.name === itemName && (existingItemData?.stack ?? existing.stack)) {
+                  const shopMaxStack = existingItemData?.stackSize ?? existing.stackSize;
+                  if (!shopMaxStack || existing.count < shopMaxStack) {
+                    stackSlot = existing.slot;
+                    toGridX = existing.gridX;
+                    toGridY = existing.gridY;
+                    rotated = existing.rotated;
+                  }
                 }
               }
               if (stackSlot === undefined) {
@@ -482,15 +487,23 @@ const GridInventory: React.FC<GridInventoryProps> = ({ inventory, onHeaderMouseD
       const cursorSlotId = occupancy[cell.y]?.[cell.x];
       if (cursorSlotId !== null && cursorSlotId !== undefined) {
         const cursorTarget = inventory.items.find((i) => i.slot === cursorSlotId);
+        const itemData = Items[sourceItem.name];
         if (cursorTarget && isSlotWithItem(cursorTarget) && cursorTarget.searched !== false &&
-            canStack(sourceItem, cursorTarget) && Items[sourceItem.name]?.stack) {
+            canStack(sourceItem, cursorTarget) && (itemData?.stack ?? cursorTarget.stack)) {
+          let stackCount = moveCount;
+          const maxStack = itemData?.stackSize ?? cursorTarget.stackSize;
+          if (maxStack) {
+            const remaining = maxStack - cursorTarget.count;
+            if (remaining <= 0) return;
+            stackCount = Math.min(stackCount, remaining);
+          }
           dispatch(
             validateMove({
               fromSlot: sourceItem.slot,
               fromType: sourceType,
               toSlot: cursorTarget.slot,
               toType: targetType,
-              count: moveCount,
+              count: stackCount,
               toGridX: cursorTarget.gridX ?? anchorX,
               toGridY: cursorTarget.gridY ?? anchorY,
               rotated: cursorTarget.rotated ?? false,
@@ -502,7 +515,7 @@ const GridInventory: React.FC<GridInventoryProps> = ({ inventory, onHeaderMouseD
               fromType: sourceType,
               toSlot: cursorTarget,
               toType: targetType,
-              count: moveCount,
+              count: stackCount,
             })
           );
           return;

@@ -5,7 +5,8 @@ import useNuiEvent from '../../hooks/useNuiEvent';
 import InventoryHotbar from './InventoryHotbar';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { store } from '../../store';
-import { refreshSlots, setAdditionalMetadata, setupInventory, selectRightInventory, selectBackpackInventory, setupBackpack, closeBackpack, removePlayerItem, removeBackpackItem, clearCraftQueue } from '../../store/inventory';
+import { refreshSlots, setAdditionalMetadata, setupInventory, restoreHotbar, selectRightInventory, selectBackpackInventory, setupBackpack, closeBackpack, removePlayerItem, removeBackpackItem, clearCraftQueue } from '../../store/inventory';
+import { reconcileHotbar } from '../../helpers/hotbarPersistence';
 import { useExitListener } from '../../hooks/useExitListener';
 import type { Inventory as InventoryProps } from '../../typings';
 import { DragSource } from '../../typings';
@@ -98,6 +99,9 @@ const Inventory: React.FC = () => {
     rightInventory?: InventoryProps;
   }>('setupInventory', (data) => {
     dispatch(setupInventory(data));
+    if (data.leftInventory) {
+      dispatch(restoreHotbar(reconcileHotbar(data.leftInventory.items)));
+    }
     !inventoryVisible && setInventoryVisible(true);
   });
 

@@ -3,7 +3,7 @@ import useNuiEvent from './hooks/useNuiEvent';
 import { Items } from './store/items';
 import { Locale } from './store/locale';
 import { setImagePath } from './store/imagepath';
-import { setupInventory, assignHotbar } from './store/inventory';
+import { setupInventory, assignHotbar, restoreHotbar } from './store/inventory';
 import { Inventory } from './typings';
 import { useAppDispatch } from './store';
 import { store } from './store';
@@ -15,6 +15,7 @@ import KeyPress from './components/utils/KeyPress';
 import { isSlotWithItem } from './helpers';
 import { isEnvBrowser } from './utils/misc';
 import { COMPONENT_SIZE_MODIFIERS } from './helpers/gridConstants';
+import { reconcileHotbar, loadBindingsFromServer } from './helpers/hotbarPersistence';
 import { useState, useCallback, useEffect } from 'react';
 
 const playerInventory = {
@@ -101,7 +102,9 @@ const playerInventory = {
       slot: 10,
       name: 'bandage',
       weight: 100,
-      count: 5,
+      count: 20,
+      stack: true,
+      stackSize: 20,
       gridX: 3,
       gridY: 2,
       rotated: false,
@@ -129,6 +132,8 @@ const playerInventory = {
       name: 'lockpick',
       weight: 200,
       count: 2,
+      stack: true,
+      stackSize: 15,
       gridX: 4,
       gridY: 3,
       rotated: false,
@@ -215,6 +220,39 @@ const playerInventory = {
       gridY: 4,
       rotated: false,
     },
+    {
+      slot: 21,
+      name: 'bandage',
+      weight: 100,
+      count: 5,
+      stack: true,
+      stackSize: 20,
+      gridX: 1,
+      gridY: 5,
+      rotated: false,
+    },
+    {
+      slot: 22,
+      name: 'lockpick',
+      weight: 200,
+      count: 12,
+      stack: true,
+      stackSize: 15,
+      gridX: 2,
+      gridY: 5,
+      rotated: false,
+    },
+    {
+      slot: 23,
+      name: 'bandage',
+      weight: 100,
+      count: 15,
+      stack: true,
+      stackSize: 20,
+      gridX: 3,
+      gridY: 5,
+      rotated: false,
+    },
   ],
 };
 
@@ -277,6 +315,8 @@ const stashInventory = {
       name: 'bandage',
       weight: 100,
       count: 10,
+      stack: true,
+      stackSize: 20,
       gridX: 9,
       gridY: 0,
       rotated: false,
@@ -750,7 +790,8 @@ const App: React.FC = () => {
     leftInventory: Inventory;
     imagepath: string;
     componentSizeModifiers?: Record<string, [number, number]>;
-  }>('init', ({ locale, items, leftInventory, imagepath, componentSizeModifiers }) => {
+    hotbarBindings?: any;
+  }>('init', ({ locale, items, leftInventory, imagepath, componentSizeModifiers, hotbarBindings }) => {
     for (const name in locale) Locale[name] = locale[name];
     for (const name in items) Items[name] = items[name];
     if (componentSizeModifiers) {
@@ -762,6 +803,14 @@ const App: React.FC = () => {
 
     setImagePath(imagepath);
     dispatch(setupInventory({ leftInventory }));
+
+    if (hotbarBindings) {
+      try {
+        const parsed = typeof hotbarBindings === 'string' ? JSON.parse(hotbarBindings) : hotbarBindings;
+        loadBindingsFromServer(parsed);
+      } catch {}
+    }
+    dispatch(restoreHotbar(reconcileHotbar(leftInventory.items)));
   });
 
   useEffect(() => {

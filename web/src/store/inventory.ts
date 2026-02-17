@@ -95,6 +95,9 @@ export const inventorySlice = createSlice({
         state.hotbar[action.payload] = null;
       }
     },
+    restoreHotbar: (state, action: PayloadAction<(number | null)[]>) => {
+      state.hotbar = action.payload;
+    },
     removePlayerItem: (state, action: PayloadAction<number>) => {
       state.leftInventory.items = state.leftInventory.items.filter((i) => i.slot !== action.payload);
     },
@@ -272,6 +275,7 @@ export const {
   setDragRotated,
   assignHotbar,
   clearHotbar,
+  restoreHotbar,
   removePlayerItem,
   removeBackpackItem,
   setupBackpack,

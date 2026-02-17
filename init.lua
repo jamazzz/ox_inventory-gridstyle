@@ -23,6 +23,7 @@ shared = {
     gridwidth = GetConvarInt('inventory:gridwidth', 10),
     gridheight = GetConvarInt('inventory:gridheight', 7),
     searchable = GetConvarInt('inventory:searchable', 0) == 1,
+    slotratio = GetConvarInt('inventory:slotratio', 1),
 }
 
 shared.dropslots = GetConvarInt('inventory:dropslots', shared.playerslots)

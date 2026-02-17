@@ -89,6 +89,7 @@ local defaultInventory = {
 
 local searchableTypes = shared.searchable and {
 	stash = true,
+	temp = true,
 	trunk = true,
 	glovebox = true,
 	drop = true,
@@ -1367,6 +1368,7 @@ RegisterNetEvent('ox_inventory:setPlayerInventory', function(currentDrops, inven
 		ItemData[v.name] = {
 			label = v.label,
 			stack = v.stack,
+			stackSize = v.stackSize or nil,
 			close = v.close,
 			count = 0,
 			description = v.description,
@@ -1476,6 +1478,8 @@ RegisterNetEvent('ox_inventory:setPlayerInventory', function(currentDrops, inven
 
 	local weaponsData = lib.load('data.weapons') or {}
 
+	local savedHotbar = GetResourceKvpString('ox_inv:hotbar')
+
 	SendNUIMessage({
 		action = 'init',
 		data = {
@@ -1491,6 +1495,7 @@ RegisterNetEvent('ox_inventory:setPlayerInventory', function(currentDrops, inven
 			},
 			imagepath = client.imagepath,
 			componentSizeModifiers = weaponsData.ComponentSizeModifiers or {},
+			hotbarBindings = savedHotbar or nil,
 		}
 	})
 
@@ -1763,6 +1768,11 @@ end)
 
 RegisterNUICallback('uiLoaded', function(_, cb)
 	client.uiLoaded = true
+	cb(1)
+end)
+
+RegisterNUICallback('saveHotbar', function(data, cb)
+	SetResourceKvp('ox_inv:hotbar', data.json)
 	cb(1)
 end)
 

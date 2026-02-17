@@ -2,6 +2,7 @@ export type ItemData = {
   name: string;
   label: string;
   stack: boolean;
+  stackSize?: number;
   usable: boolean;
   close: boolean;
   count: number;

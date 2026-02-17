@@ -121,7 +121,11 @@ export const canStack = (sourceSlot: Slot, targetSlot: Slot) =>
 export const findAvailableSlot = (item: Slot, data: ItemData, items: Slot[]) => {
   if (!data.stack) return items.find((target) => target.name === undefined);
 
-  const stackableSlot = items.find((target) => target.name === item.name && isEqual(target.metadata, item.metadata));
+  const stackableSlot = items.find((target) => {
+    if (target.name !== item.name || !isEqual(target.metadata, item.metadata)) return false;
+    if (data.stackSize && (target.count ?? 0) >= data.stackSize) return false;
+    return true;
+  });
 
   return stackableSlot || items.find((target) => target.name === undefined);
 };

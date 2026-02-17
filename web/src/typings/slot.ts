@@ -7,6 +7,8 @@ export type Slot = {
     [key: string]: any;
   };
   durability?: number;
+  stack?: boolean;
+  stackSize?: number;
   gridX?: number;
   gridY?: number;
   rotated?: boolean;

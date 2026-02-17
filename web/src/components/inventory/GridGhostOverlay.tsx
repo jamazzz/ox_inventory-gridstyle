@@ -13,6 +13,7 @@ import {
   getWeaponEffectiveSize,
 } from '../../helpers/gridUtils';
 import { DEFAULT_GRID_DIMENSIONS } from '../../helpers/gridConstants';
+import { getCellSizePx } from '../../helpers/uiScale';
 import { Inventory } from '../../typings';
 import { useThrottledDragLayer } from '../../hooks/useThrottledDragLayer';
 import { getItemSizes } from '../../helpers/itemSizeCache';
@@ -52,7 +53,7 @@ function getCachedLayout(container: HTMLDivElement): CachedLayout {
     rect,
     paddingLeft: parseFloat(style.paddingLeft) || 0,
     paddingTop: parseFloat(style.paddingTop) || 0,
-    cellSize: window.innerHeight * 0.058,
+    cellSize: getCellSizePx(),
     gap: 2,
     containerEl: container,
   };
@@ -284,11 +285,18 @@ const GridGhostOverlay: React.FC<GridGhostOverlayProps> = ({
       const targetItem = inventoryItems.find((i) => i.slot === targetSlotId);
 
       if (targetItem && isSlotWithItem(targetItem)) {
+        const itemData = Items[data.item.name];
         const isStackable =
-          data.item.name === targetItem.name && !!Items[data.item.name]?.stack;
+          data.item.name === targetItem.name && !!(itemData?.stack ?? targetItem.stack);
+        const maxStack = itemData?.stackSize ?? targetItem.stackSize;
+        const stackFull = isStackable && maxStack
+          ? targetItem.count >= maxStack
+          : false;
 
-        if (isStackable) {
+        if (isStackable && !stackFull) {
           showAsValid = true;
+        } else if (isStackable && stackFull) {
+          showAsValid = false;
         } else if (isLocalItem) {
           const sourceItem = inventoryItems.find((i) => i.slot === data.item.slot);
           if (sourceItem && isSlotWithItem(sourceItem)) {
