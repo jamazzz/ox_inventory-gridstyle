@@ -77,14 +77,11 @@ function pixelToGridCell(
 
 interface GridInventoryProps {
   inventory: Inventory;
-  onHeaderMouseDown?: (e: React.MouseEvent) => void;
-  isLocked?: boolean;
-  onToggleLock?: () => void;
   onClose?: () => void;
   canSort?: boolean;
 }
 
-const GridInventory: React.FC<GridInventoryProps> = ({ inventory, onHeaderMouseDown, isLocked, onToggleLock, onClose, canSort = true }) => {
+const GridInventory: React.FC<GridInventoryProps> = ({ inventory, onClose, canSort = true }) => {
   const dispatch = useAppDispatch();
   const dragRotated = useAppSelector(selectDragRotated);
   const isBusy = useAppSelector((state) => state.inventory.isBusy);
@@ -655,7 +652,7 @@ const GridInventory: React.FC<GridInventoryProps> = ({ inventory, onHeaderMouseD
 
   return (
     <div className="inventory-grid-wrapper" data-inv-type={inventory.type} style={{ pointerEvents: isBusy ? 'none' : 'auto' }}>
-      <div className={`inventory-grid-header-wrapper${isLocked ? ' header--locked' : ''}`} onMouseDown={onHeaderMouseDown}>
+      <div className="inventory-grid-header-wrapper">
         <div className="grid-header-left">
           <div className="grid-header-icon-wrap">
             {getTypeIcon(inventory.type)}
@@ -715,19 +712,6 @@ const GridInventory: React.FC<GridInventoryProps> = ({ inventory, onHeaderMouseD
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 6h18"/><path d="M3 12h14"/><path d="M3 18h10"/>
               </svg>
-            </button>
-          )}
-          {onToggleLock && (
-            <button className={`panel-lock-btn${isLocked ? ' panel-lock-btn--locked' : ''}`} onClick={onToggleLock} title={isLocked ? 'Unlock panel' : 'Lock panel'}>
-              {isLocked ? (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-              ) : (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>
-                </svg>
-              )}
             </button>
           )}
           {onClose && (

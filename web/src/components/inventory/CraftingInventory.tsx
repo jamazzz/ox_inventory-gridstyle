@@ -17,12 +17,9 @@ import GridInventory from './GridInventory';
 
 interface Props {
   inventory: Inventory;
-  onHeaderMouseDown?: (e: React.MouseEvent) => void;
-  isLocked?: boolean;
-  onToggleLock?: () => void;
 }
 
-const CraftingInventory: React.FC<Props> = ({ inventory, onHeaderMouseDown, isLocked, onToggleLock }) => {
+const CraftingInventory: React.FC<Props> = ({ inventory }) => {
   const dispatch = useAppDispatch();
   const craftQueue = useAppSelector(selectCraftQueue);
   const itemAmount = useAppSelector(selectItemAmount);
@@ -96,9 +93,6 @@ const CraftingInventory: React.FC<Props> = ({ inventory, onHeaderMouseDown, isLo
       <div className="crafting-recipe-grid-container">
         <GridInventory
           inventory={inventory}
-          onHeaderMouseDown={onHeaderMouseDown}
-          isLocked={isLocked}
-          onToggleLock={onToggleLock}
         />
       </div>
 

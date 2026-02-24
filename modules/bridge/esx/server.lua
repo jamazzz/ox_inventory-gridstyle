@@ -76,11 +76,6 @@ function server.buyLicense(inv, license)
 	return true, 'have_purchased'
 end
 
---- Takes traditional item data and updates it to support ox_inventory, i.e.
---- ```
---- Old: {"cola":1, "burger":3}
---- New: [{"slot":1,"name":"cola","count":1}, {"slot":2,"name":"burger","count":3}]
----```
 ---@diagnostic disable-next-line: duplicate-set-field
 function server.convertInventory(playerId, items)
 	if type(items) == 'table' then

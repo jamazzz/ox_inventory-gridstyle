@@ -17,6 +17,7 @@ import { isEnvBrowser } from './utils/misc';
 import { COMPONENT_SIZE_MODIFIERS } from './helpers/gridConstants';
 import { reconcileHotbar, loadBindingsFromServer } from './helpers/hotbarPersistence';
 import { useState, useCallback, useEffect } from 'react';
+import { setDamage } from './store/damage';
 
 const playerInventory = {
   id: 'test',
@@ -838,6 +839,10 @@ const App: React.FC = () => {
   useNuiEvent('closeInventory', () => {
     manager.dispatch({ type: 'dnd-core/END_DRAG' });
   });
+
+  useNuiEvent('DamageCall', (data: any) => {
+    dispatch(setDamage(data))
+  })
 
   useEffect(() => {
     if (isEnvBrowser()) {

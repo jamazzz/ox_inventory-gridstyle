@@ -1,0 +1,87 @@
+.group .UPPERBODY {
+  height: 36.9169vw;
+  left: 2.6vw;
+  object-fit: cover;
+  position: absolute;
+  top: 1.03vw;
+  width: 20.5vw;
+}
+
+.group .img {
+  height: 38.23045vw;
+  left: 2.8125vw;
+  object-fit: cover;
+  position: absolute;
+  top: 0.2032vw;
+  width: 20.07625vw;
+}
+
+.group .LLEG {
+  height: 38.23045vw;
+  object-fit: cover;
+  position: absolute;
+  left: 2.953125vw;
+  top: 0.2703125vw;
+  width: 20.07625vw;
+}
+
+.group .RLEG {
+  height: 38.23045vw;
+  left: 2.7890625vw;
+  object-fit: cover;
+  position: absolute;
+  top: 0.2703125vw;
+  width: 20.07625vw;
+}
+
+.group .LARM {
+  height: 38.23045vw;
+  left: 2.8125vw;
+  object-fit: cover;
+  position: absolute;
+  top: 0.2375vw;
+  width: 20.07625vw;
+}
+
+.group .neck {
+  height: 38.23045vw;
+  left: 5.5vw;
+  object-fit: cover;
+  position: absolute;
+  top: 0.303125vw;
+  width: 20.07625vw;
+}
+
+.group .img-2 {
+  top: 0.394vw;
+  left: 3.15vw;
+  position: absolute;
+  width: 19.41625vw;
+  height: 38.23045vw;
+}
+
+.group .img-3 {
+  top: 0.4vw;
+  left: 3.2vw;
+  position: absolute;
+  width: 19.41625vw;
+  height: 38.23045vw;
+}
+
+.group .head {
+  height: 38.23045vw;
+  left: 0;
+  object-fit: cover;
+  position: absolute;
+  top: 0.135625vw;
+  width: 20.07625vw;
+}
+
+.group .RARM {
+  height: 38.9169vw;
+  left: 2.5462vw;
+  object-fit: cover;
+  position: absolute;
+  top: -0.007vw;
+  width: 20.5417vw;
+}

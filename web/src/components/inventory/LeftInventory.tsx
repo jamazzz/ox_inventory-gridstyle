@@ -5,18 +5,19 @@ import { selectLeftInventory } from '../../store/inventory';
 import { isGridInventory } from '../../helpers/gridUtils';
 
 interface Props {
-  onHeaderMouseDown?: (e: React.MouseEvent) => void;
-  isLocked?: boolean;
-  onToggleLock?: () => void;
 }
 
-const LeftInventory: React.FC<Props> = ({ onHeaderMouseDown, isLocked, onToggleLock }) => {
+const LeftInventory: React.FC<Props> = ({}) => {
   const leftInventory = useAppSelector(selectLeftInventory);
 
-  return isGridInventory(leftInventory.type) ? (
-    <GridInventory inventory={leftInventory} onHeaderMouseDown={onHeaderMouseDown} isLocked={isLocked} onToggleLock={onToggleLock} />
-  ) : (
-    <InventoryGrid inventory={leftInventory} onHeaderMouseDown={onHeaderMouseDown} isLocked={isLocked} onToggleLock={onToggleLock} />
+  return (
+    <div style={{ position: 'relative' }}>
+      {isGridInventory(leftInventory.type) ? (
+        <GridInventory inventory={leftInventory} />
+      ) : (
+        <InventoryGrid inventory={leftInventory} />
+      )}
+    </div>
   );
 };
 

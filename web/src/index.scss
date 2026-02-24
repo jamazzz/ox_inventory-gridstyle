@@ -1,9 +1,16 @@
 @use 'sass:color';
 
+// ─── Neutral B&W + Semantic Color Theme ─────────────────────────────────────
+$mainColor: #080808;
+$textColor: #a0a0a0;
 $mainColor: #141414;
 $textColor: #999999;
 $mainFont: 'Inter', 'Segoe UI', Roboto, sans-serif;
 
+$secondaryColor: rgba(0, 0, 0, 0.5);
+$secondaryColorHighlight: rgba(255, 255, 255, 0.04);
+$secondaryColorLight: rgba(0, 0, 0, 0.6);
+$secondaryColorDark: rgba(0, 0, 0, 0.85);
 $secondaryColor: rgba(10, 10, 10, 0.4);
 $secondaryColorHighlight: rgba(255, 255, 255, 0.06);
 $secondaryColorLight: rgba(0, 0, 0, 0.5);
@@ -15,6 +22,45 @@ $gridSize: 10.2vh;
 $gridGap: 2px;
 $containerSize: calc(#{$gridRows} * #{$gridSize + 0.22vh} + #{$gridRows} * #{$gridGap});
 
+// Surface scale — very dark, all rgba for layered opacity feel
+$bg-deep:       rgba(4,  4,  4,  0.9);
+$bg-panel:      rgba(10, 10, 10, 0.94);
+$bg-card:       rgba(16, 16, 16, 0.90);
+$bg-card-hover: rgba(22, 22, 22, 0.92);
+
+// Borders — white opacity only
+$border-subtle: rgba(255, 255, 255, 0.07);
+$border-hover:  rgba(255, 255, 255, 0.18);
+
+// Text scale
+$text-primary:   rgba(255, 255, 255, 0.90);
+$text-secondary: rgba(255, 255, 255, 0.50);
+$text-muted:     rgba(255, 255, 255, 0.28);
+
+// Accent — neutral white
+$accent:      rgba(255, 255, 255, 0.75);
+$accent-glow: rgba(255, 255, 255, 0.05);
+
+// Semantic — red & green restored, with opacity
+$success: #4ade80;   // green — kept for success/valid states
+$danger:  #f87171;   // red   — kept for error/drop/danger states
+$warning: #fbbf24;   // amber
+
+// Inventory type colours:
+//   evidence      → red family     (danger)
+//   everything else → white opacity tiers
+$type-player:    rgba(255, 255, 255, 0.78);
+$type-stash:     rgba(255, 255, 255, 0.68);
+$type-shop:      rgba(255, 255, 255, 0.68);                    // black & white neutral
+$type-crafting:  rgba(255, 255, 255, 0.70);
+$type-trunk:     rgba(255, 255, 255, 0.42);
+$type-drop:      rgba(255, 255, 255, 0.65);
+$type-glovebox:  rgba(255, 255, 255, 0.48);
+$type-dumpster:  #84cc16;                    // yellow-green
+$type-evidence:  #ef4444;                    // red — police evidence
+$type-container: rgba(255, 255, 255, 0.62);
+$type-newdrop:   rgba(255, 255, 255, 0.65);
+$type-backpack:  rgba(255, 255, 255, 0.75);
 $bg-deep: #0a0a0a;
 $bg-panel: #141414;
 $bg-card: #1c1c1c;
@@ -49,10 +95,74 @@ $type-container: #909090;
 $type-newdrop: #e08040;
 $type-backpack: #b8b8b8;
 
+// ─── CSS Custom Properties (runtime / Tailwind compat) ──────────────────────
 :root {
   --cell-size: 5.8vh;
   --grid-gap: 2px;
+
+  // shadcn neutral light (kept for any surface that reads :root)
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
+
+// shadcn dark token overrides — applied when .dark is present
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.922 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+// ─── Everything below is unchanged — all references use the remapped vars ───
 
 body {
   margin: 0;
@@ -112,6 +222,8 @@ input[type='number']::-webkit-outer-spin-button {
 
 @keyframes ghostPulse {
   0%, 100% { opacity: 0.55; }
+  50%       { opacity: 0.9; }
+  0%, 100% { opacity: 0.55; }
   50% { opacity: 0.9; }
 }
 
@@ -127,79 +239,48 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes fadeInRight {
-  from {
-    opacity: 0;
-    transform: translateX(12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(12px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 @keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 @keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-
-  100% {
-    background-position: 200% 0;
-  }
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
+// ─── Context Menu ────────────────────────────────────────────────────────────
+
 .context-menu-list {
+  min-width: 230px;
+  max-width: 280px;
+  background: $bg-panel;
   min-width: 240px;
   max-width: 290px;
   background: linear-gradient(170deg, rgba(24, 24, 27, 0.97) 0%, rgba(9, 9, 11, 0.98) 100%);
   color: $text-primary;
   padding: 0;
+  border: 1px solid $border-subtle;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 10px;
   outline: none;
@@ -286,6 +367,9 @@ input[type='number']::-webkit-outer-spin-button {
 
 .ctx-preview {
   display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid $border-subtle;
   gap: 10px;
   padding: 12px 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -297,6 +381,8 @@ input[type='number']::-webkit-outer-spin-button {
   height: 44px;
   flex-shrink: 0;
   background: rgba(255, 255, 255, 0.03);
+  border: 1px solid $border-subtle;
+  border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 6px;
   display: flex;
@@ -372,6 +458,16 @@ input[type='number']::-webkit-outer-spin-button {
   font-size: 10px;
   font-weight: 500;
   font-family: $mainFont;
+  color: $text-secondary;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 2px 8px;
+  border-radius: 4px;
+  line-height: 1.5;
+
+  &--accent {
+    color: $accent;
+    background: rgba(255, 255, 255, 0.06);
+  }
   color: $text-muted;
   flex-shrink: 0;
 
@@ -446,6 +542,8 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 .ctx-amount-section {
+  padding: 8px 16px;
+  border-bottom: 1px solid $border-subtle;
   padding: 8px 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
@@ -470,6 +568,9 @@ input[type='number']::-webkit-outer-spin-button {
   font-weight: 700;
   font-family: $mainFont;
   color: $accent;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 3px 10px;
+  border-radius: 5px;
   background: rgba($accent, 0.08);
   padding: 2px 8px;
   border-radius: 4px;
@@ -493,8 +594,9 @@ input[type='number']::-webkit-outer-spin-button {
     height: 14px;
     border-radius: 50%;
     background: $accent;
-    border: 2px solid rgba(14, 15, 22, 0.98);
+    border: 2px solid rgba(14, 14, 14, 0.98);
     cursor: pointer;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15), 0 1px 4px rgba(0, 0, 0, 0.3);
     box-shadow: 0 0 0 2px rgba($accent, 0.15), 0 1px 3px rgba(0, 0, 0, 0.3);
   }
 }
@@ -540,6 +642,7 @@ input[type='number']::-webkit-outer-spin-button {
 
     &:hover {
       background: rgba($danger, 0.06);
+      background: rgba($danger, 0.06);
       border-color: rgba($danger, 0.18);
       color: $danger;
     }
@@ -550,6 +653,9 @@ input[type='number']::-webkit-outer-spin-button {
   }
 }
 
+.ctx-extra {
+  border-top: 1px solid $border-subtle;
+  padding: 4px;
 .ctx-actions-secondary {
   display: flex;
   flex-wrap: wrap;
@@ -588,7 +694,7 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 .ctx-attachments {
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  border-top: 1px solid $border-subtle;
   padding: 8px 12px 10px;
 }
 
@@ -612,6 +718,10 @@ input[type='number']::-webkit-outer-spin-button {
 .ctx-attachment-chip {
   display: flex;
   align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid $border-subtle;
+  border-radius: 6px;
   gap: 6px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -623,6 +733,8 @@ input[type='number']::-webkit-outer-spin-button {
   position: relative;
 
   &:hover {
+    background: rgba($danger, 0.08);
+    border-color: rgba($danger, 0.30);
     background: rgba($danger, 0.06);
     border-color: rgba($danger, 0.2);
 
@@ -630,6 +742,7 @@ input[type='number']::-webkit-outer-spin-button {
     .ctx-attachment-chip-x { opacity: 1; }
   }
 
+  &:active { transform: scale(0.95); }
   &:active {
     transform: scale(0.98);
   }
@@ -717,12 +830,14 @@ input[type='number']::-webkit-outer-spin-button {
 
   &--danger {
     &:hover {
-      background: rgba($danger, 0.04);
+      background: rgba($danger, 0.06);
       color: $danger;
       .context-menu-item-icon { opacity: 0.7; color: $danger; }
     }
   }
 }
+
+// ─── Tooltip ─────────────────────────────────────────────────────────────────
 
 .tooltip-wrapper {
   pointer-events: none;
@@ -733,10 +848,15 @@ input[type='number']::-webkit-outer-spin-button {
   color: $text-primary;
   font-family: $mainFont;
   padding: 0;
+  border-radius: 14px;
+  border: 1px solid $border-subtle;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   overflow: hidden;
   box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.55),
+    0 8px 20px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(170deg, rgba(14, 14, 14, 0.97) 0%, rgba(5, 5, 5, 0.99) 100%);
     0 16px 48px rgba(0, 0, 0, 0.5),
     0 6px 16px rgba(0, 0, 0, 0.3);
   background: linear-gradient(170deg, rgba(24, 24, 27, 0.97) 0%, rgba(9, 9, 11, 0.98) 100%);
@@ -832,6 +952,7 @@ input[type='number']::-webkit-outer-spin-button {
 .tooltip-item-type {
   font-size: 10px;
   font-weight: 500;
+  font-family: $mainFont;
   color: $text-muted;
   text-transform: capitalize;
 }
@@ -906,11 +1027,13 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 .tooltip-wrapper--shop {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: linear-gradient(170deg, rgba(12, 12, 12, 0.97) 0%, rgba(5, 5, 5, 0.99) 100%);
   border-color: rgba($type-shop, 0.12);
   background: linear-gradient(170deg, rgba(color.mix($type-shop, $bg-panel, 6%), 0.97) 0%, rgba($bg-deep, 0.98) 100%);
 
   .tooltip-header--shop {
-    border-bottom-color: rgba($type-shop, 0.1);
+    border-bottom-color: rgba(255, 255, 255, 0.07);
   }
 }
 
@@ -927,6 +1050,9 @@ input[type='number']::-webkit-outer-spin-button {
   font-weight: 700;
   font-family: $mainFont;
   color: $type-shop;
+  background: rgba($type-shop, 0.10);
+  padding: 5px 14px;
+  border-radius: 6px;
   background: rgba($type-shop, 0.1);
   padding: 5px 12px;
   border-radius: 5px;
@@ -936,7 +1062,7 @@ input[type='number']::-webkit-outer-spin-button {
 
   &--dirty {
     color: $danger;
-    background: rgba($danger, 0.1);
+    background: rgba(255, 255, 255, 0.04);
   }
 }
 
@@ -950,6 +1076,8 @@ input[type='number']::-webkit-outer-spin-button {
   padding: 8px 14px 10px;
   display: flex;
   flex-direction: column;
+  gap: 5px;
+  border-bottom: 1px solid $border-subtle;
   gap: 2px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
@@ -984,14 +1112,8 @@ input[type='number']::-webkit-outer-spin-button {
   font-family: $mainFont;
   color: $text-secondary;
 
-  &--sold {
-    color: $danger;
-    font-weight: 700;
-  }
-
-  &--dirty {
-    color: $danger;
-  }
+  &--sold  { color: $danger; font-weight: 700; }
+  &--dirty { color: $danger; }
 }
 
 .tooltip-shop-hint {
@@ -1002,10 +1124,7 @@ input[type='number']::-webkit-outer-spin-button {
   padding-top: 6px;
   border-top: 1px solid rgba(255, 255, 255, 0.03);
 
-  svg {
-    color: rgba($type-shop, 0.4);
-    flex-shrink: 0;
-  }
+  svg { color: rgba(255, 255, 255, 0.25); flex-shrink: 0; }
 
   span {
     font-size: 10px;
@@ -1117,24 +1236,27 @@ input[type='number']::-webkit-outer-spin-button {
   transition: width 0.2s ease;
 }
 
-.tooltip-crafting-duration {
+.tooltip-components {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.tooltip-components-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tooltip-component-chip {
+  display: flex;
   align-items: center;
   gap: 5px;
   padding: 8px 14px;
 
-  svg {
-    width: 14px;
-    height: 14px;
-    fill: $text-muted;
-  }
-
-  span {
-    font-size: 12px;
-    font-family: $mainFont;
-    color: $text-muted;
-  }
+  svg  { width: 14px; height: 14px; fill: $text-muted; }
+  span { font-size: 12px; font-family: $mainFont; color: $text-muted; }
 }
 
 .tooltip-ingredients {
@@ -1159,6 +1281,7 @@ input[type='number']::-webkit-outer-spin-button {
     transition: border-color 0.15s ease;
   }
 
+  span { font-size: 12px; font-family: $mainFont; color: $text-secondary; }
   span {
     font-size: 11px;
     font-family: $mainFont;
@@ -1166,24 +1289,13 @@ input[type='number']::-webkit-outer-spin-button {
   }
 
   &--available {
-    img {
-      border-color: rgba($success, 0.25);
-    }
-
-    span {
-      color: rgba($success, 0.85);
-    }
+    img   { border-color: rgba($success, 0.25); }
+    span  { color: rgba($success, 0.85); }
   }
 
   &--missing {
-    img {
-      border-color: rgba($danger, 0.3);
-      opacity: 0.7;
-    }
-
-    span {
-      color: rgba($danger, 0.8);
-    }
+    img   { border-color: rgba($danger, 0.30); opacity: 0.7; }
+    span  { color: rgba($danger, 0.80); }
   }
 }
 
@@ -1195,9 +1307,9 @@ input[type='number']::-webkit-outer-spin-button {
   opacity: 0.5;
 }
 
-button:active {
-  transform: translateY(1px);
-}
+// ─── Buttons (generic) ───────────────────────────────────────────────────────
+
+button:active { transform: translateY(1px); }
 
 .item-drag-preview {
   width: 7.7vh;
@@ -1213,22 +1325,34 @@ button:active {
   image-rendering: -webkit-optimize-contrast;
 }
 
+// ─── Inventory Layout ────────────────────────────────────────────────────────
+
 .inventory-wrapper {
+  display: grid;
+  grid-template-columns: 35% 25% 35%;
+  column-gap: 8vh;  // Only space between columns
+  row-gap: 1vh;       // Space between rows (if applicable)
+  gap: 2.5vh;
+  width: 100vw;
+  height: 100vh;
+  padding: 2vh;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+.inventory-column {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: auto;
   width: 100%;
-  height: 100%;
-  padding-top: 10vh;
-  gap: 16px;
 }
 
 .inventory-panel {
   display: flex;
-
-  &--positioned {
-    position: fixed;
-  }
+  width: 100%;
+  height: auto;
 
   &--right {
     opacity: 0;
@@ -1251,21 +1375,20 @@ button:active {
       pointer-events: auto;
     }
   }
-
-  &--dragging {
-    z-index: 2000 !important;
-
-    .inventory-grid-header-wrapper,
-    .slot-inventory-header {
-      cursor: grabbing !important;
-    }
-  }
 }
+
+// ─── Panel Buttons ───────────────────────────────────────────────────────────
 
 %header-btn {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid $border-subtle;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.35);
   width: 22px;
   height: 22px;
   border: none;
@@ -1281,6 +1404,8 @@ button:active {
   @extend %header-btn;
 
   &:hover {
+    background: rgba($success, 0.10);
+    border-color: rgba($success, 0.28);
     background: rgba($success, 0.1);
     color: $success;
   }
@@ -1306,17 +1431,37 @@ button:active {
 }
 
 .panel-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid $border-subtle;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-left: 6px;
+  flex-shrink: 0;
   @extend %header-btn;
 
   &:hover {
+    background: rgba($danger, 0.10);
+    border-color: rgba($danger, 0.28);
     background: rgba($danger, 0.1);
     color: $danger;
   }
 }
 
-.header--locked {
-  cursor: default !important;
+.left-inventory-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1rem;
 }
+
+// ─── Inventory Control ───────────────────────────────────────────────────────
 
 .grid-header-btn-separator {
   width: 1px;
@@ -1354,6 +1499,8 @@ button:active {
     letter-spacing: 1px;
 
     &:focus-within {
+      border-color: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
       border-color: rgba($accent, 0.25);
       box-shadow: 0 0 0 3px rgba($accent, 0.06);
       background: $bg-card;
@@ -1379,6 +1526,7 @@ button:active {
       background: $bg-card-hover;
       border-color: $border-hover;
       color: $text-primary;
+      box-shadow: 0 2px 12px rgba(255, 255, 255, 0.04);
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
     }
 
@@ -1388,6 +1536,8 @@ button:active {
     }
   }
 }
+
+// ─── Useful Controls Dialog ──────────────────────────────────────────────────
 
 .useful-controls-dialog-overlay {
   position: fixed;
@@ -1402,16 +1552,22 @@ button:active {
 
 @keyframes overlayFadeIn {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
 
 .useful-controls-dialog {
+  background: linear-gradient(170deg, rgba(14, 14, 14, 0.97) 0%, rgba(5, 5, 5, 0.99) 100%);
+  width: 420px;
   background: rgba($bg-panel, 0.97);
   width: 340px;
   max-height: 80vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  border-radius: 12px;
+  border: 1px solid $border-subtle;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55), 0 8px 20px rgba(0, 0, 0, 0.3);
+  animation: scaleIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
@@ -1477,6 +1633,7 @@ button:active {
 .uc-section {
   padding: 8px 14px;
 
+  & + & { border-top: 1px solid rgba(255, 255, 255, 0.03); }
   & + & {
     border-top: 1px solid rgba(255, 255, 255, 0.03);
   }
@@ -1511,6 +1668,13 @@ button:active {
 
 .uc-row {
   display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  transition: background 0.1s ease;
+
+  &:hover { background: rgba(255, 255, 255, 0.02); }
   align-items: baseline;
   justify-content: space-between;
   gap: 16px;
@@ -1521,6 +1685,10 @@ button:active {
   font-size: 9px;
   font-weight: 600;
   font-family: $mainFont;
+  color: $accent;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 5px;
   color: rgba(255, 255, 255, 0.45);
   letter-spacing: 0.3px;
   white-space: nowrap;
@@ -1591,6 +1759,7 @@ button:active {
     border: none;
     cursor: pointer;
     transition: transform 0.1s ease;
+    &:hover { transform: scale(1.2); }
 
     &:hover {
       transform: scale(1.3);
@@ -1622,6 +1791,10 @@ button:active {
   font-weight: 600;
   font-family: $mainFont;
   color: $text-muted;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid $border-subtle;
+  border-radius: 4px;
+  padding: 2px 8px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 3px;
@@ -1706,6 +1879,9 @@ button:active {
   display: flex;
   justify-content: center;
   align-items: center;
+  fill: rgba(255, 255, 255, 0.6);
+  border-radius: 10px !important;
+  background-color: transparent !important; 
   fill: rgba(255, 255, 255, 0.3);
   border-radius: 4px !important;
   background-color: rgba($bg-panel, 0.85) !important;
@@ -1717,12 +1893,16 @@ button:active {
   }
 
   &:hover {
+    background-color: transparent !important;
+    fill: rgba(255, 255, 255, 0.9);
     background-color: rgba($bg-card-hover, 0.9) !important;
     fill: rgba(255, 255, 255, 0.6);
     border-color: rgba(255, 255, 255, 0.08);
     cursor: pointer;
   }
 }
+
+// ─── Slot Inventory ──────────────────────────────────────────────────────────
 
 .slot-inventory-wrapper {
   display: flex;
@@ -1731,9 +1911,7 @@ button:active {
   min-width: 0;
   animation: fadeInLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-  .inventory-panel--right & {
-    animation: none;
-  }
+  .inventory-panel--right & { animation: none; }
 }
 
 .slot-inventory-header {
@@ -1745,6 +1923,7 @@ button:active {
   background: $bg-panel;
   border-radius: 10px 10px 0 0;
   border: 1px solid $border-subtle;
+  border-bottom: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   position: relative;
   cursor: grab;
@@ -1763,6 +1942,8 @@ button:active {
     pointer-events: none;
   }
 
+  .slot-header-left  { display: flex; align-items: center; gap: 10px; }
+  .slot-header-right { display: flex; align-items: center; }
   .slot-header-left {
     display: flex;
     align-items: center;
@@ -1836,13 +2017,15 @@ button:active {
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-.slot-inventory-wrapper>div>.weight-bar {
+.slot-inventory-wrapper > div > .weight-bar {
   height: 2px;
   border: none;
   border-radius: 0;
   background: rgba(0, 0, 0, 0.3);
   margin: 0;
 }
+
+// ─── Inventory Slot (legacy) ─────────────────────────────────────────────────
 
 .inventory-slot {
   background-color: $bg-card;
@@ -1859,7 +2042,7 @@ button:active {
 
   &:hover {
     border-color: $border-hover;
-    box-shadow: 0 0 12px rgba($accent, 0.06);
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.04);
   }
 }
 
@@ -1902,16 +2085,10 @@ button:active {
   justify-content: space-between;
   height: 100%;
 
-  p {
-    font-size: 12px;
-  }
+  p { font-size: 12px; }
 }
 
-.item-slot-header-wrapper {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-}
+.item-slot-header-wrapper { display: flex; flex-direction: row; justify-content: flex-end; }
 
 .item-hotslot-header-wrapper {
   @extend .item-slot-header-wrapper;
@@ -1925,9 +2102,7 @@ button:active {
   padding: 3px;
   gap: 3px;
 
-  p {
-    font-size: 12px;
-  }
+  p { font-size: 12px; }
 }
 
 .item-slot-currency-wrapper {
@@ -1937,10 +2112,7 @@ button:active {
   align-items: center;
   padding-right: 3px;
 
-  p {
-    font-size: 14px;
-    text-shadow: 0.1vh 0.1vh 0 rgba(0, 0, 0, 0.7);
-  }
+  p { font-size: 14px; text-shadow: 0.1vh 0.1vh 0 rgba(0, 0, 0, 0.7); }
 }
 
 .item-slot-price-wrapper {
@@ -1949,11 +2121,10 @@ button:active {
   justify-content: flex-end;
   padding-right: 3px;
 
-  p {
-    font-size: 14px;
-    text-shadow: 0.1vh 0.1vh 0 rgba(0, 0, 0, 0.7);
-  }
+  p { font-size: 14px; text-shadow: 0.1vh 0.1vh 0 rgba(0, 0, 0, 0.7); }
 }
+
+// ─── Hotbar ──────────────────────────────────────────────────────────────────
 
 .hotbar-container {
   display: flex;
@@ -1970,6 +2141,14 @@ button:active {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background: linear-gradient(180deg, rgba(8, 8, 8, 0.94) 0%, rgba(4, 4, 4, 0.97) 100%);
+  border-radius: 14px;
+  border: 1px solid $border-subtle;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  padding: 10px 14px 12px;
   background: rgba($bg-panel, 0.94);
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -1984,6 +2163,7 @@ button:active {
   left: 15%;
   right: 15%;
   height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.25) 50%, transparent 100%);
   background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%);
   pointer-events: none;
 }
@@ -2003,6 +2183,23 @@ button:active {
   flex-shrink: 0;
 
   &--filled {
+    background: linear-gradient(180deg, rgba(14, 14, 14, 0.92) 0%, rgba(8, 8, 8, 0.96) 100%);
+    border: 1px solid $border-subtle;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    &:hover {
+      border-color: $border-hover;
+      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.06), 0 2px 8px rgba(0, 0, 0, 0.3);
+      transform: translateY(-3px);
+
+      .hotbar-slot-image {
+        transform: scale(1.05);
+        filter: brightness(1.2) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+      }
+
+      .hotbar-slot-label { color: $text-primary; }
+      .hotbar-slot-glow  { opacity: 0.6; }
+    }
     background: linear-gradient(145deg, color.adjust($bg-card, $lightness: 3%) 0%, $bg-card 100%);
     border: 1px solid rgba(255, 255, 255, 0.06);
   }
@@ -2017,6 +2214,9 @@ button:active {
   position: absolute;
   top: 4px;
   left: 4px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.35) 100%);
+  color: #141414;
+  font-size: 9px;
   background: rgba(0, 0, 0, 0.55);
   color: rgba(255, 255, 255, 0.7);
   font-size: 10px;
@@ -2030,6 +2230,7 @@ button:active {
   border-radius: 3px;
   z-index: 5;
   line-height: 1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   letter-spacing: 0;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -2116,6 +2317,17 @@ button:active {
 }
 
 .hotbar-slot-glow {
+  position: absolute;
+  bottom: -2px;
+  left: 10%;
+  right: 10%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 2px;
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 3;
+  transition: opacity 0.2s ease;
   display: none;
 }
 
@@ -2125,6 +2337,8 @@ button:active {
   margin: 0;
   background: rgba(0, 0, 0, 0.4);
 }
+
+// ─── Item Notifications ──────────────────────────────────────────────────────
 
 .item-notify-container {
   display: flex;
@@ -2184,6 +2398,17 @@ button:active {
   text-overflow: ellipsis;
   letter-spacing: 0.2px;
   line-height: 1.2;
+.item-notification-action-box {
+  width: 100%;
+  color: $textColor;
+  background-color: rgba(0, 0, 0, 0.4);
+  text-transform: uppercase;
+  text-align: center;
+  border-top-left-radius: 0.25vh;
+  border-top-right-radius: 0.25vh;
+  font-family: $mainFont;
+
+  p { font-size: 11px; padding: 2px; font-weight: 600; }
 }
 
 .item-notify-action {
@@ -2195,6 +2420,8 @@ button:active {
   letter-spacing: 0.5px;
   line-height: 1.2;
 }
+
+// ─── Utility Bars ────────────────────────────────────────────────────────────
 
 .durability-bar {
   background: rgba(0, 0, 0, 0.5);
@@ -2210,23 +2437,19 @@ button:active {
   overflow: hidden;
 }
 
+// ─── Transitions ─────────────────────────────────────────────────────────────
+
 .transition-fade-enter {
   opacity: 0;
   transform: scale(0.97);
 }
-
 .transition-fade-enter-active {
   opacity: 1;
   transform: scale(1);
   transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
-.transition-fade-exit {
-  opacity: 1;
-  transform: scale(1);
-}
-
+.transition-fade-exit          { opacity: 1; transform: scale(1); }
 .transition-fade-exit-active {
   opacity: 0;
   transform: scale(0.97);
@@ -2234,29 +2457,22 @@ button:active {
               transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.transition-slide-up-enter {
-  transform: translateY(40px);
-  opacity: 0;
-}
-
+.transition-slide-up-enter          { transform: translateY(40px); opacity: 0; }
 .transition-slide-up-enter-active {
   transform: translateY(0px);
   opacity: 1;
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
               opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
-.transition-slide-up-exit {
-  transform: translateY(0px);
-  opacity: 1;
-}
-
+.transition-slide-up-exit          { transform: translateY(0px); opacity: 1; }
 .transition-slide-up-exit-active {
   transform: translateY(40px);
   opacity: 0;
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
               opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+// ─── Grid Inventory ──────────────────────────────────────────────────────────
 
 .inventory-grid-wrapper {
   display: grid;
@@ -2265,9 +2481,7 @@ button:active {
   width: fit-content;
   animation: fadeInLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-  .inventory-panel--right & {
-    animation: none;
-  }
+  .inventory-panel--right & { animation: none; }
 }
 
 .inventory-grid-header-wrapper {
@@ -2281,7 +2495,6 @@ button:active {
   border: 1px solid $border-subtle;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   position: relative;
-  cursor: grab;
   user-select: none;
   overflow: hidden;
   min-width: 0;
@@ -2331,24 +2544,28 @@ button:active {
   }
 }
 
+// ─── Type-specific header accents (all neutral white-opacity) ─────────────────
+
 $inv-types: (
-  'player': $type-player,
-  'stash': $type-stash,
-  'shop': $type-shop,
-  'crafting': $type-crafting,
-  'trunk': $type-trunk,
-  'drop': $type-drop,
-  'newdrop': $type-newdrop,
-  'glovebox': $type-glovebox,
-  'dumpster': $type-dumpster,
-  'policeevidence': $type-evidence,
-  'container': $type-container,
-  'backpack': $type-backpack,
+  'player':        $type-player,
+  'stash':         $type-stash,
+  'shop':          $type-shop,
+  'crafting':      $type-crafting,
+  'trunk':         $type-trunk,
+  'drop':          $type-drop,
+  'newdrop':       $type-newdrop,
+  'glovebox':      $type-glovebox,
+  'dumpster':      $type-dumpster,
+  'policeevidence':$type-evidence,
+  'container':     $type-container,
+  'backpack':      $type-backpack,
 );
 
 @each $type, $color in $inv-types {
   .inventory-grid-wrapper[data-inv-type="#{$type}"] {
     .inventory-grid-header-wrapper {
+      border-color: rgba(255, 255, 255, 0.04);
+      border-bottom-color: rgba($color, 0.25);
       border-color: rgba($color, 0.06);
       border-bottom-color: rgba($color, 0.15);
 
@@ -2364,6 +2581,7 @@ $inv-types: (
       }
     }
 
+    .grid-header-icon { color: $color; }
     .grid-header-icon {
       color: $color;
     }
@@ -2373,17 +2591,13 @@ $inv-types: (
       box-shadow: 0 0 8px rgba($color, 0.04);
     }
 
-    .grid-header-label {
-      color: rgba(255, 255, 255, 0.9);
-    }
+    .grid-header-label { color: rgba(255, 255, 255, 0.9); }
 
-    .grid-inventory-container {
-      border-color: rgba($color, 0.06);
-    }
+    .grid-inventory-container { border-color: rgba(255, 255, 255, 0.04); }
 
     .grid-item:hover {
-      border-color: rgba($color, 0.25);
-      box-shadow: 0 0 14px rgba($color, 0.08);
+      border-color: rgba($color, 0.30);
+      box-shadow: 0 0 14px rgba($color, 0.07);
     }
   }
 
@@ -2417,14 +2631,14 @@ $inv-types: (
 
 .inventory-grid-wrapper[data-inv-type="shop"] {
   .grid-item--shop {
-    border-color: rgba($type-shop, 0.06);
+    border-color: rgba($type-shop, 0.08);
 
     &:hover {
-      border-color: rgba($type-shop, 0.3);
-      box-shadow: 0 0 16px rgba($type-shop, 0.1);
+      border-color: rgba($type-shop, 0.35);
+      box-shadow: 0 0 16px rgba($type-shop, 0.10);
 
       .grid-item-shop-price {
-        text-shadow: 0 0 6px rgba($type-shop, 0.3), 0 1px 4px rgba(0, 0, 0, 0.9);
+        text-shadow: 0 0 6px rgba($type-shop, 0.35), 0 1px 4px rgba(0, 0, 0, 0.9);
       }
     }
   }
@@ -2432,15 +2646,15 @@ $inv-types: (
 
 .inventory-grid-wrapper[data-inv-type="crafting"] {
   .grid-item--craft {
-    border-color: rgba($type-crafting, 0.08);
-    border-left: 2px solid rgba($type-crafting, 0.18);
+    border-color: rgba(255, 255, 255, 0.05);
+    border-left: 2px solid rgba(255, 255, 255, 0.12);
     transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease, filter 0.25s ease, opacity 0.25s ease;
 
     &::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, rgba($type-crafting, 0.04) 0%, transparent 50%, rgba($type-crafting, 0.02) 100%);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, transparent 50%, rgba(255, 255, 255, 0.01) 100%);
       pointer-events: none;
       border-radius: inherit;
       z-index: 0;
@@ -2448,22 +2662,20 @@ $inv-types: (
     }
 
     &:hover {
-      border-color: rgba($type-crafting, 0.35);
-      border-left-color: rgba($type-crafting, 0.5);
-      box-shadow: 0 0 20px rgba($type-crafting, 0.1), inset 0 0 12px rgba($type-crafting, 0.03);
+      border-color: rgba(255, 255, 255, 0.22);
+      border-left-color: rgba(255, 255, 255, 0.35);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.03), inset 0 0 12px rgba(255, 255, 255, 0.02);
       transform: translateY(-1px);
 
       .grid-item-image {
-        filter: brightness(1.1) drop-shadow(0 2px 8px rgba($type-crafting, 0.15));
+        filter: brightness(1.1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
       }
 
       .grid-item-craft-ingredients {
-        text-shadow: 0 0 6px rgba($type-crafting, 0.3), 0 1px 4px rgba(0, 0, 0, 0.9);
+        text-shadow: 0 0 6px rgba(255, 255, 255, 0.15), 0 1px 4px rgba(0, 0, 0, 0.9);
       }
 
-      .grid-item-craft-label {
-        color: $text-secondary;
-      }
+      .grid-item-craft-label { color: $text-secondary; }
     }
 
     &.grid-item--craft-unavailable {
@@ -2473,9 +2685,7 @@ $inv-types: (
       border-left-color: rgba(255, 255, 255, 0.04);
       border-color: rgba(255, 255, 255, 0.03);
 
-      &::after {
-        opacity: 0;
-      }
+      &::after { opacity: 0; }
 
       &:hover {
         transform: none;
@@ -2483,17 +2693,15 @@ $inv-types: (
         border-color: rgba(255, 255, 255, 0.06);
         border-left-color: rgba(255, 255, 255, 0.06);
 
-        .grid-item-image {
-          filter: none;
-        }
+        .grid-item-image { filter: none; }
       }
 
-      .grid-item-craft-duration {
-        opacity: 0.5;
-      }
+      .grid-item-craft-duration { opacity: 0.5; }
     }
   }
 }
+
+// ─── Grid Header Extras ──────────────────────────────────────────────────────
 
 .grid-header-weight-group {
   display: flex;
@@ -2536,6 +2744,17 @@ $inv-types: (
   }
 }
 
+.grid-header-segment {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  transition: background 0.3s ease;
+
+  &--filled {
+    background: rgba($success, 0.85);
+    box-shadow: 0 0 4px rgba($success, 0.25);
+  }
 .grid-header-weight-bar-fill {
   height: 100%;
   border-radius: 1.5px;
@@ -2557,7 +2776,7 @@ $inv-types: (
   overflow-y: auto;
   overflow-x: hidden;
   position: relative;
-  max-height: 50vh;
+  max-height: 95vh;
   background: $bg-deep;
   border-radius: 0 0 10px 10px;
   border: 1px solid $border-subtle;
@@ -2574,8 +2793,10 @@ $inv-types: (
   position: relative;
 
   &::before { display: none; }
-  &::after { display: none; }
+  &::after  { display: none; }
 }
+
+// ─── Ghost Cells ─────────────────────────────────────────────────────────────
 
 .grid-ghost-cell {
   pointer-events: none;
@@ -2584,18 +2805,22 @@ $inv-types: (
   animation: ghostPulse 1.4s ease-in-out infinite;
 
   &.ghost-valid {
-    background: rgba($success, 0.12);
-    border: 1.5px solid rgba($success, 0.4);
+    background: rgba($success, 0.10);
+    border: 1.5px solid rgba($success, 0.45);
     box-shadow: inset 0 0 12px rgba($success, 0.06);
   }
 
   &.ghost-invalid {
-    background: rgba($danger, 0.12);
+    background: rgba($danger, 0.08);
     border: 1.5px solid rgba($danger, 0.35);
-    box-shadow: inset 0 0 12px rgba($danger, 0.06);
+    box-shadow: inset 0 0 12px rgba($danger, 0.05);
   }
 
   &.ghost-weapon-compat {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 0 18px rgba(255, 255, 255, 0.08), inset 0 0 10px rgba(255, 255, 255, 0.04);
+    animation: ghostPulse 1.4s ease-in-out infinite;
     background: rgba(56, 189, 248, 0.06);
     border: 1.5px solid rgba(56, 189, 248, 0.35);
     box-shadow: 0 0 12px rgba(56, 189, 248, 0.1), inset 0 0 8px rgba(56, 189, 248, 0.04);
@@ -2604,6 +2829,9 @@ $inv-types: (
   }
 
   &.ghost-attach {
+    background: rgba(255, 255, 255, 0.09);
+    border: 1.5px solid rgba(255, 255, 255, 0.38);
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.07), inset 0 0 10px rgba(255, 255, 255, 0.04);
     background: rgba(56, 189, 248, 0.1);
     border: 1.5px solid rgba(56, 189, 248, 0.5);
     box-shadow: 0 0 14px rgba(56, 189, 248, 0.15), inset 0 0 10px rgba(56, 189, 248, 0.06);
@@ -2613,12 +2841,16 @@ $inv-types: (
 
   &.ghost-weapon-incompat {
     background: rgba($danger, 0.06);
+    border: 1.5px solid rgba($danger, 0.22);
+    background: rgba($danger, 0.06);
     border: 1.5px solid rgba($danger, 0.25);
     box-shadow: 0 0 8px rgba($danger, 0.08);
     animation: none;
     border-radius: 3px;
   }
 }
+
+// ─── Grid Overlays ───────────────────────────────────────────────────────────
 
 .grid-busy-overlay {
   position: absolute;
@@ -2642,9 +2874,9 @@ $inv-types: (
   animation: busySpin 0.6s linear infinite;
 }
 
-@keyframes busySpin {
-  to { transform: rotate(360deg); }
-}
+@keyframes busySpin { to { transform: rotate(360deg); } }
+
+// ─── Mystery / Search States ─────────────────────────────────────────────────
 
 .grid-item--unsearched {
   cursor: pointer;
@@ -2652,10 +2884,7 @@ $inv-types: (
 
   &:hover {
     border-color: rgba(255, 255, 255, 0.08);
-
-    .grid-item-mystery-icon {
-      color: rgba(255, 255, 255, 0.45);
-    }
+    .grid-item-mystery-icon { color: rgba(255, 255, 255, 0.45); }
   }
 }
 
@@ -2692,15 +2921,15 @@ $inv-types: (
   animation: searchSpin 0.7s linear infinite;
 }
 
-@keyframes searchSpin {
-  to { transform: rotate(360deg); }
-}
+@keyframes searchSpin { to { transform: rotate(360deg); } }
 
 .grid-item--revealing {
   animation: itemReveal 0.35s ease-out forwards;
 }
 
 @keyframes itemReveal {
+  0%   { opacity: 0; filter: blur(6px) brightness(1.5); transform: scale(0.95); }
+  100% { opacity: 1; filter: none; transform: scale(1); }
   0% {
     opacity: 0;
     transform: scale(0.92);
@@ -2710,6 +2939,8 @@ $inv-types: (
     transform: scale(1);
   }
 }
+
+// ─── Grid Item ───────────────────────────────────────────────────────────────
 
 .grid-item {
   position: relative;
@@ -2724,6 +2955,7 @@ $inv-types: (
 
   &:hover {
     border-color: $border-hover;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.04);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.04);
     z-index: 5;
     transform: translateY(-1px);
@@ -2732,11 +2964,10 @@ $inv-types: (
       filter: brightness(1.08) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
     }
 
-    .grid-item-label {
-      color: $text-primary;
-    }
+    .grid-item-label { color: $text-primary; }
   }
 
+  &:active { cursor: grabbing; }
   &:active {
     cursor: grabbing;
     transform: translateY(0);
@@ -2779,10 +3010,7 @@ $inv-types: (
 
 .grid-item-image {
   position: absolute;
-  top: 4%;
-  left: 4%;
-  right: 4%;
-  bottom: 16%;
+  top: 4%; left: 4%; right: 4%; bottom: 16%;
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -2798,6 +3026,8 @@ $inv-types: (
   justify-content: space-between;
   align-items: flex-start;
   position: absolute;
+  top: 0; left: 0; right: 0;
+  padding: 2px 3px;
   top: 0;
   left: 0;
   right: 0;
@@ -2844,9 +3074,7 @@ $inv-types: (
 
 .grid-item-info {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 0; left: 0; right: 0;
   display: flex;
   flex-direction: column;
   pointer-events: none;
@@ -2884,6 +3112,11 @@ $inv-types: (
 
 .grid-item-hotbar-badge {
   position: absolute;
+  bottom: 16px;
+  right: 2px;
+  background: rgba(255, 255, 255, 0.55);
+  color: #141414;
+  font-size: 7px;
   top: 2px;
   left: 2px;
   background: rgba(0, 0, 0, 0.55);
@@ -2905,11 +3138,11 @@ $inv-types: (
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
+// ─── Shop Items ──────────────────────────────────────────────────────────────
+
 .grid-item-shop-footer {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 0; left: 0; right: 0;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -2945,9 +3178,7 @@ $inv-types: (
   white-space: nowrap;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
 
-  &--dirty {
-    color: $danger;
-  }
+  &--dirty { color: $danger; }
 }
 
 .grid-item-stock {
@@ -2960,7 +3191,6 @@ $inv-types: (
   border-radius: 3px;
   line-height: 1.5;
   letter-spacing: 0.3px;
-
 }
 
 .grid-item-sold-out {
@@ -2985,11 +3215,11 @@ $inv-types: (
   border-radius: 4px;
 }
 
+// ─── Crafting Items ──────────────────────────────────────────────────────────
+
 .grid-item-craft-footer {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 0; left: 0; right: 0;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -3021,7 +3251,7 @@ $inv-types: (
   color: $type-crafting;
   white-space: nowrap;
   letter-spacing: 0.3px;
-  text-shadow: 0 0 8px rgba($type-crafting, 0.2), 0 1px 4px rgba(0, 0, 0, 0.9);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.08), 0 1px 4px rgba(0, 0, 0, 0.9);
 }
 
 .grid-item-craft-duration {
@@ -3036,13 +3266,11 @@ $inv-types: (
   padding: 1px 5px;
   border-radius: 3px;
   line-height: 1.6;
-  text-shadow: 0 0 6px rgba($type-crafting, 0.15), 0 1px 3px rgba(0, 0, 0, 0.8);
-  border: 1px solid rgba($type-crafting, 0.1);
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.08), 0 1px 3px rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   transition: opacity 0.2s ease;
 
-  svg {
-    opacity: 0.85;
-  }
+  svg { opacity: 0.85; }
 }
 
 .grid-item-currency-icon {
@@ -3068,6 +3296,8 @@ $inv-types: (
   transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
+// ─── Amount Selector ─────────────────────────────────────────────────────────
+
 .grid-amount-selector {
   display: flex;
   align-items: center;
@@ -3075,7 +3305,7 @@ $inv-types: (
   background: rgba(0, 0, 0, 0.35);
   padding: 4px 6px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid $border-subtle;
 }
 
 .grid-amount-label {
@@ -3093,7 +3323,7 @@ $inv-types: (
   justify-content: center;
   width: 22px;
   height: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid $border-subtle;
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.04);
   color: $text-secondary;
@@ -3105,12 +3335,10 @@ $inv-types: (
   &:hover {
     background: rgba(255, 255, 255, 0.1);
     color: $text-primary;
-    border-color: rgba(255, 255, 255, 0.12);
+    border-color: $border-hover;
   }
 
-  &:active {
-    transform: scale(0.92);
-  }
+  &:active { transform: scale(0.92); }
 }
 
 .grid-amount-input {
@@ -3123,7 +3351,7 @@ $inv-types: (
   font-variant-numeric: tabular-nums;
   color: $text-primary;
   background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid $border-subtle;
   border-radius: 5px;
   outline: none;
   padding: 0;
@@ -3137,7 +3365,7 @@ $inv-types: (
   }
 
   &:focus {
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: $border-hover;
     background: rgba(0, 0, 0, 0.55);
   }
 }
@@ -3147,7 +3375,7 @@ $inv-types: (
   gap: 2px;
   margin-left: 4px;
   padding-left: 6px;
-  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  border-left: 1px solid $border-subtle;
 }
 
 .grid-amount-quick {
@@ -3166,35 +3394,36 @@ $inv-types: (
   &:hover {
     background: rgba(255, 255, 255, 0.08);
     color: $text-primary;
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: $border-hover;
   }
 
-  &--active {
-    font-weight: 700;
-  }
+  &--active { font-weight: 700; }
 }
 
+// shop / craft tints for amount selector
 .grid-amount-selector--shop {
-  .grid-amount-label { color: rgba($type-shop, 0.5); }
-  .grid-amount-input { color: $type-shop; }
-  .grid-amount-btn:hover { color: $type-shop; border-color: rgba($type-shop, 0.2); }
+  .grid-amount-label  { color: rgba($type-shop, 0.45); }
+  .grid-amount-input  { color: $type-shop; }
+  .grid-amount-btn:hover { color: $type-shop; border-color: rgba($type-shop, 0.22); }
   .grid-amount-quick--active {
     color: $type-shop;
-    background: rgba($type-shop, 0.1);
-    border-color: rgba($type-shop, 0.2);
+    background: rgba($type-shop, 0.10);
+    border-color: rgba($type-shop, 0.18);
   }
 }
 
 .grid-amount-selector--craft {
-  .grid-amount-label { color: rgba($type-crafting, 0.5); }
-  .grid-amount-input { color: $type-crafting; }
-  .grid-amount-btn:hover { color: $type-crafting; border-color: rgba($type-crafting, 0.2); }
+  .grid-amount-label  { color: rgba(255, 255, 255, 0.3); }
+  .grid-amount-input  { color: $type-crafting; }
+  .grid-amount-btn:hover { color: $type-crafting; border-color: rgba(255, 255, 255, 0.15); }
   .grid-amount-quick--active {
     color: $type-crafting;
-    background: rgba($type-crafting, 0.1);
-    border-color: rgba($type-crafting, 0.2);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
   }
 }
+
+// ─── Header Badges ───────────────────────────────────────────────────────────
 
 .grid-header-badge {
   font-size: 9px;
@@ -3207,51 +3436,39 @@ $inv-types: (
 
   &--shop {
     color: $type-shop;
-    background: rgba($type-shop, 0.1);
-    border: 1px solid rgba($type-shop, 0.15);
+    background: rgba($type-shop, 0.10);
+    border: 1px solid rgba($type-shop, 0.18);
   }
 
   &--crafting {
     color: $type-crafting;
-    background: rgba($type-crafting, 0.1);
-    border: 1px solid rgba($type-crafting, 0.15);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.10);
   }
 }
+
+// ─── Drag Preview ────────────────────────────────────────────────────────────
 
 .grid-drag-preview {
   position: fixed;
   pointer-events: none;
   z-index: 1000;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
   opacity: 0.85;
-  border: 1px solid rgba($accent, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 3px;
   background: $bg-card;
   box-shadow:
     0 12px 40px rgba(0, 0, 0, 0.45),
-    0 0 20px rgba($accent, 0.05);
+    0 0 20px rgba(255, 255, 255, 0.03);
 }
 
-@keyframes craftingPulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
-}
+// ─── Crafting Queue ──────────────────────────────────────────────────────────
 
-@keyframes craftingStripes {
-  0% { background-position: 0 0; }
-  100% { background-position: 0 20px; }
-}
-
-@keyframes craftCellAppear {
-  0% { opacity: 0; transform: scale(0.85); }
-  100% { opacity: 1; transform: scale(1); }
-}
-
-@keyframes craftDoneAppear {
-  0% { opacity: 0; transform: scale(0.92); }
-  100% { opacity: 1; transform: scale(1); }
-}
+@keyframes craftingPulse    { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+@keyframes craftingStripes  { 0% { background-position: 0 0; } 100% { background-position: 0 20px; } }
+@keyframes craftCellAppear  { 0% { opacity: 0; transform: scale(0.85); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes craftDoneAppear  { 0% { opacity: 0; transform: scale(0.92); } 100% { opacity: 1; transform: scale(1); } }
 
 .crafting-inventory-wrapper {
   display: flex;
@@ -3266,9 +3483,7 @@ $inv-types: (
   min-height: 0;
   overflow: hidden;
 
-  .inventory-grid-wrapper {
-    animation: none;
-  }
+  .inventory-grid-wrapper { animation: none; }
 
   .grid-inventory-container {
     max-height: 35vh;
@@ -3282,16 +3497,16 @@ $inv-types: (
   overflow-y: auto;
   overflow-x: hidden;
   background: $bg-deep;
-  border: 1px solid rgba($type-crafting, 0.06);
-  border-top: 2px solid rgba($type-crafting, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 2px solid rgba(255, 255, 255, 0.10);
   border-radius: 0 0 8px 8px;
   padding: 4px;
   transition: background 0.2s ease, border-color 0.2s ease;
 
   &--active {
-    background: rgba($type-crafting, 0.04);
-    border-color: rgba($type-crafting, 0.3);
-    border-top-color: rgba($type-crafting, 0.4);
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.14);
+    border-top-color: rgba(255, 255, 255, 0.20);
   }
 
   &--empty {
@@ -3308,11 +3523,7 @@ $inv-types: (
   padding: 2px 4px 4px;
   user-select: none;
 
-  svg {
-    opacity: 0.3;
-    color: $type-crafting;
-  }
-
+  svg  { opacity: 0.3; color: $type-crafting; }
   span {
     font-size: 8px;
     font-weight: 700;
@@ -3326,8 +3537,8 @@ $inv-types: (
   font-size: 7px !important;
   font-weight: 600 !important;
   letter-spacing: 0 !important;
-  color: rgba($type-crafting, 0.4) !important;
-  background: rgba($type-crafting, 0.06);
+  color: rgba(255, 255, 255, 0.3) !important;
+  background: rgba(255, 255, 255, 0.05);
   padding: 0 4px;
   border-radius: 3px;
   line-height: 1.5;
@@ -3343,11 +3554,7 @@ $inv-types: (
   pointer-events: none;
   padding: 4px 0;
 
-  svg {
-    opacity: 0.2;
-    color: $type-crafting;
-  }
-
+  svg  { opacity: 0.2; color: $type-crafting; }
   span {
     font-size: 8px;
     font-weight: 600;
@@ -3385,14 +3592,14 @@ $inv-types: (
   }
 
   &--crafting {
-    border-color: rgba($type-crafting, 0.3);
+    border-color: rgba(255, 255, 255, 0.20);
     animation: craftCellAppear 0.3s ease backwards;
 
     &::before {
       content: '';
       position: absolute;
       inset: -1px;
-      border: 1px solid rgba($type-crafting, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.22);
       border-radius: 3px;
       pointer-events: none;
       animation: craftingPulse 2s ease-in-out infinite;
@@ -3402,22 +3609,20 @@ $inv-types: (
   }
 
   &--done {
-    border-color: rgba($success, 0.3);
+    border-color: rgba(255, 255, 255, 0.25);
     cursor: grab;
     animation: craftDoneAppear 0.3s ease backwards;
     will-change: transform;
 
     &:hover {
-      border-color: rgba($success, 0.5);
+      border-color: rgba(255, 255, 255, 0.38);
       transform: translateY(-1px) scale(1.02);
 
       .craft-queue-cell-image {
         filter: brightness(1.1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
       }
 
-      .craft-queue-cell-label {
-        color: $text-primary;
-      }
+      .craft-queue-cell-label { color: $text-primary; }
     }
 
     &:active {
@@ -3427,7 +3632,7 @@ $inv-types: (
   }
 
   &--error {
-    border-color: rgba($danger, 0.25);
+    border-color: rgba(255, 255, 255, 0.08);
     opacity: 0.5;
     cursor: default;
 
@@ -3437,7 +3642,7 @@ $inv-types: (
   }
 
   &--partial {
-    border-color: rgba($type-crafting, 0.35);
+    border-color: rgba(255, 255, 255, 0.22);
     cursor: grab;
     animation: craftDoneAppear 0.3s ease backwards;
     will-change: transform;
@@ -3447,7 +3652,7 @@ $inv-types: (
     }
 
     &:hover {
-      border-color: rgba($type-crafting, 0.5);
+      border-color: rgba(255, 255, 255, 0.35);
       transform: translateY(-1px) scale(1.02);
     }
 
@@ -3460,10 +3665,7 @@ $inv-types: (
 
 .craft-queue-cell-image {
   position: absolute;
-  top: 4%;
-  left: 4%;
-  right: 4%;
-  bottom: 16%;
+  top: 4%; left: 4%; right: 4%; bottom: 16%;
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -3476,8 +3678,7 @@ $inv-types: (
 
 .craft-queue-cell-count {
   position: absolute;
-  top: 2px;
-  left: 2px;
+  top: 2px; left: 2px;
   z-index: 4;
   font-size: 8px;
   font-weight: 700;
@@ -3493,8 +3694,7 @@ $inv-types: (
 
 .craft-queue-cell-badge {
   position: absolute;
-  top: 2px;
-  right: 2px;
+  top: 2px; right: 2px;
   z-index: 4;
   pointer-events: none;
 }
@@ -3510,37 +3710,16 @@ $inv-types: (
   letter-spacing: 0.3px;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 
-  &--queued {
-    color: $text-muted;
-    background: rgba(0, 0, 0, 0.4);
-  }
-
-  &--crafting {
-    color: $type-crafting;
-    background: rgba(0, 0, 0, 0.5);
-  }
-
-  &--done {
-    color: $success;
-    background: rgba(0, 0, 0, 0.5);
-  }
-
-  &--fail {
-    color: $danger;
-    background: rgba(0, 0, 0, 0.5);
-  }
-
-  &--partial {
-    color: $type-crafting;
-    background: rgba(0, 0, 0, 0.5);
-  }
+  &--queued   { color: $text-muted;    background: rgba(0, 0, 0, 0.4); }
+  &--crafting { color: $type-crafting; background: rgba(0, 0, 0, 0.5); }
+  &--done     { color: $success;       background: rgba(0, 0, 0, 0.5); }
+  &--fail     { color: $danger;        background: rgba(0, 0, 0, 0.5); }
+  &--partial  { color: $type-crafting; background: rgba(0, 0, 0, 0.5); }
 }
 
 .craft-queue-cell-footer {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 0; left: 0; right: 0;
   z-index: 2;
   pointer-events: none;
 }
@@ -3577,23 +3756,22 @@ $inv-types: (
   background:
     repeating-linear-gradient(
       -45deg,
-      rgba($type-crafting, 0.08),
-      rgba($type-crafting, 0.08) 4px,
-      rgba($type-crafting, 0.16) 4px,
-      rgba($type-crafting, 0.16) 8px
+      rgba(255, 255, 255, 0.04),
+      rgba(255, 255, 255, 0.04) 4px,
+      rgba(255, 255, 255, 0.08) 4px,
+      rgba(255, 255, 255, 0.08) 8px
     );
   background-size: 100% 20px;
-  border-top: 1px solid rgba($type-crafting, 0.25);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
   transition: height 0.1s linear;
   animation: craftingStripes 0.8s linear infinite;
 }
 
+// ─── Grid Drag Preview ───────────────────────────────────────────────────────
+
 .grid-drag-preview-image {
   position: absolute;
-  top: 6%;
-  left: 6%;
-  right: 6%;
-  bottom: 6%;
+  top: 6%; left: 6%; right: 6%; bottom: 6%;
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -3601,6 +3779,8 @@ $inv-types: (
   transition: transform 0.12s ease;
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
 }
+
+// ─── Dev Toolbar ─────────────────────────────────────────────────────────────
 
 .dev-toolbar {
   position: fixed;
@@ -3610,10 +3790,10 @@ $inv-types: (
   display: flex;
   align-items: center;
   gap: 4px;
-  background: rgba(14, 15, 22, 0.92);
+  background: rgba(14, 14, 14, 0.92);
   padding: 6px 10px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid $border-subtle;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   z-index: 10000;
 }
@@ -3641,15 +3821,15 @@ $inv-types: (
   text-transform: capitalize;
 
   &:hover {
-    background: rgba($accent, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     color: $text-primary;
-    border-color: rgba($accent, 0.15);
+    border-color: $border-hover;
   }
 
   &--active {
-    background: rgba($accent, 0.15);
+    background: rgba(255, 255, 255, 0.10);
     color: $accent;
-    border-color: rgba($accent, 0.3);
+    border-color: rgba(255, 255, 255, 0.20);
     font-weight: 600;
   }
 }

@@ -1,5 +1,23 @@
 return {
 	Weapons = {
+
+		['WEAPON_DRILL'] = {
+			label = 'Drill',
+			weight = 5000,
+			width = 2,
+			height = 3,
+			durability = 0.1,
+					buttons = {
+			{
+				label = 'Drill Bit Info',
+				action = function(slot)
+					print('Drill Bit Info for slot: ' .. slot)
+					TriggerServerEvent('way_mining:server:drillbitInfo', slot)
+				end
+			},
+		},
+		},
+
 		['WEAPON_BATTLERIFLE'] = {
 			label = 'Battle Rifle',
 			weight = 3300,

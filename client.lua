@@ -84,7 +84,7 @@ local defaultInventory = {
 	maxWeight = shared.dropweight,
 	items = {},
 	gridWidth = 10,
-	gridHeight = 7,
+	gridHeight = 15,
 }
 
 local searchableTypes = shared.searchable and {
@@ -181,6 +181,7 @@ function client.openInventory(inv, data)
         return lib.notify({ id = 'inventory_player_access', type = 'error', description = locale('inventory_player_access') })
     end
 
+		TriggerEvent('ox_inventory:UpdatePlayerDamage')
     local left, right, accessError
 
     if inv == 'player' and data ~= cache.serverId then
@@ -1502,7 +1503,7 @@ RegisterNetEvent('ox_inventory:setPlayerInventory', function(currentDrops, inven
 	})
 
 	PlayerData.loaded = true
-
+	TriggerEvent('ox_inventory:UpdatePlayerDamage')
 	if not client.disablesetupnotification then
 		lib.notify({ description = locale('inventory_setup') })
 	end
@@ -1968,7 +1969,6 @@ local swapActive = false
 ---Synchronise and validate all item movement between the NUI and server.
 RegisterNUICallback('swapItems', function(data, cb)
     if swapActive or not invOpen or invBusy or usingItem then return cb(false) end
-
     swapActive = true
 
 	if data.toType == 'newdrop' then
@@ -2250,3 +2250,90 @@ lib.callback.register('ox_inventory:getVehicleData', function(netid)
 	end
 end)
 
+bodypercent = { 
+	['HEAD'] = { percent = 0, bullets = 0, severity = false, broken = false, bleeding = false },
+	['NECK'] = { percent = 0, bullets = 0, severity = false, broken = false, bleeding = false },
+	['UPPER_BODY'] = { percent = 0, bullets = 0, severity = false, broken = false, bleeding = false },
+	['LOWER_BODY'] = { percent = 0, bullets = 0, severity = false, broken = false, bleeding = false },
+	['LARM'] = { percent = 0, bullets = 0, severity = false, broken = false, bleeding = false },
+	['RARM'] = { percent = 0, bullets = 0, severity = false, broken = false, bleeding = false },
+	['LHAND'] = { percent = 0, bullets = 0, severity = false, broken = false, bleeding = false },
+	['RHAND'] = { percent = 0, bullets = 0, severity = false, broken = false, bleeding = false },
+	['LLEG'] = { percent = 0, bullets = 0, severity = false, broken = false, bleeding = false },
+	['RLEG'] = { percent = 0, bullets = 0, severity = false, broken = false, bleeding = false },
+	['LFOOT'] = { percent = 0, bullets = 0, severity = false, broken = false, bleeding = false },
+	['RFOOT'] = { percent = 0, bullets = 0, severity = false, broken = false, bleeding = false },
+	['SPINE'] = { percent = 0, bullets = 0, severity = false, broken = false, bleeding = false },
+}
+
+RegisterNetEvent('ox_inventory:UpdatePlayerDamage', function(BodyParts)
+	local GetPlayerDamage = BodyParts or exports.BC_Wounding:GetPlayerDamage()
+	for k, v in pairs(GetPlayerDamage) do
+		if v.severity and not bodypercent[k].severity then
+			bodypercent[k].percent = bodypercent[k].percent + 40
+			bodypercent[k].severity = true
+		end
+
+		if not v.severity and bodypercent[k].severity then
+			bodypercent[k].severity = false
+			bodypercent[k].percent = bodypercent[k].percent - 40
+		end
+
+		if v.broken and not bodypercent[k].broken then
+			bodypercent[k].percent = bodypercent[k].percent + 20
+			bodypercent[k].broken = true
+		end
+
+		if not v.broken and bodypercent[k].broken then
+			bodypercent[k].broken = false
+			bodypercent[k].percent = bodypercent[k].percent - 20
+		end
+
+		if v.bleeding and not bodypercent[k].bleeding then
+			bodypercent[k].percent = bodypercent[k].percent + 10
+			bodypercent[k].bleeding = true
+		end
+
+		if not v.bleeding and bodypercent[k].bleeding then
+			bodypercent[k].bleeding = false
+			bodypercent[k].percent = bodypercent[k].percent - 10
+		end
+
+		if v.bullet and v.bullet ~= bodypercent[k].bullets then
+			if v.bullet > bodypercent[k].bullets then
+				local bulletCalc = math.floor(v.bullet * 10)
+				bodypercent[k].percent = bodypercent[k].percent + bulletCalc
+				bodypercent[k].bullets = v.bullet
+			else
+				local bulletCalc = math.floor(v.bullet * 10)
+				bodypercent[k].percent = bodypercent[k].percent - bulletCalc
+				bodypercent[k].bullets = v.bullet
+			end
+		end
+
+		-- Ensure the value does not exceed 100
+        if bodypercent[k].percent > 100 then
+            bodypercent[k].percent = 100
+		elseif bodypercent[k].percent < 0 then
+			bodypercent[k].percent = 0
+		end
+	end
+	SendNUIMessage({
+		action = 'DamageCall',
+		data = bodypercent
+	})
+end)
+
+RegisterNetEvent('ox_inventory:resetdamageforplayer', function()
+    for k, v in pairs(bodypercent) do
+        v.percent = 0
+        v.bullets = 0
+        v.severity = false
+        v.broken = false
+        v.bleeding = false
+    end
+    SendNUIMessage({
+        action = 'DamageCall',
+        data = bodypercent
+    })
+end)

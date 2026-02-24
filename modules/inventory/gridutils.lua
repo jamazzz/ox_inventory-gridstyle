@@ -109,14 +109,14 @@ function GridUtils.FindFirstFit(grid, gridWidth, gridHeight, w, h)
 end
 
 local dimensionDefaults = {
-    player = { 10, 7 },
-    stash = { 10, 7 },
-    trunk = { 8, 5 },
-    glovebox = { 5, 2 },
-    container = { 4, 3 },
+    player = { 10, 15 },
+    stash = { 10, 10 },
+    trunk = { 10, 5 },
+    glovebox = { 10, 2 },
+    container = { 10, 3 },
     drop = { 10, 7 },
     newdrop = { 10, 7 },
-    dumpster = { 6, 3 },
+    dumpster = { 10, 3 },
     policeevidence = { 10, 7 },
     shop = { 10, 7 },
     crafting = { 10, 7 },
@@ -135,7 +135,7 @@ function GridUtils.GetDimensions(invType, slots)
 
     local dims = dimensionDefaults[invType]
     if dims then return dims[1], dims[2] end
-    return cols, shared.gridheight or 7
+    return cols, shared.gridheight or 15
 end
 
 function GridUtils.IsGridInventory(invType)

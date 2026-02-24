@@ -1,58 +1,140 @@
 return {
-	['testburger'] = {
-		label = 'Test Burger',
-		weight = 220,
-		width = 1,
-		height = 1,
-		degrade = 60,
+
+	['drillbit'] = {
+		label = 'Drill Bit',
+		description = 'A drill bit used for mining.',
+		weight = 500,
+		stack = true,
+	},
+
+	['spike_roll'] = {
+		label = 'Spike Strip Roll',
+		description = 'Careful its sharp',
+		weight = 5000,
+		stack = false,	
+		consume = 0,
 		client = {
-			image = 'burger_chicken.png',
-			status = { hunger = 200000 },
-			anim = 'eating',
-			prop = 'burger',
-			usetime = 2500,
-			export = 'ox_inventory_examples.testburger'
+			export = 'way_spikes.useRoll'
 		},
-		server = {
-			export = 'ox_inventory_examples.testburger',
-			test = 'what an amazingly delicious burger, amirite?'
+	},
+	
+	['spike_deployer'] = {
+		label = 'Spike Deployer',
+		description = 'Remote spike strip deployer. Requires the right frequency to activate. Thank god for modern technology',
+		weight = 15000,
+		stack = false,
+		consume = 0,
+		client = {
+			export = 'way_spikes.useDeployer'
+		},
+	},
+	
+	['spike_deployer_remote'] = {
+		label = 'Spike Remote',
+		description = 'Remote for tuning to the frequency of a spike strip deployer',
+		weight = 500,
+		stack = false,
+		consume = 0,
+		close = true,
+		client = {
+			export = 'way_spikes.useRemote'
 		},
 		buttons = {
 			{
-				label = 'Lick it',
+				label = 'Tune Frequency',
 				action = function(slot)
-					print('You licked the burger')
+					exports["way_spikes"]:tuneFrequency({
+						slot = slot,
+						name = 'spike_deployer_remote',
+						close = true,
+					})
 				end
 			},
 			{
-				label = 'Squeeze it',
+				label = 'Deploy Spikes',
 				action = function(slot)
-					print('You squeezed the burger :(')
-				end
-			},
-			{
-				label = 'What do you call a vegan burger?',
-				group = 'Hamburger Puns',
-				action = function(slot)
-					print('A misteak.')
-				end
-			},
-			{
-				label = 'What do frogs like to eat with their hamburgers?',
-				group = 'Hamburger Puns',
-				action = function(slot)
-					print('French flies.')
-				end
-			},
-			{
-				label = 'Why were the burger and fries running?',
-				group = 'Hamburger Puns',
-				action = function(slot)
-					print('Because they\'re fast food.')
+					exports["way_spikes"]:useRemote({
+						slot = slot,
+						name = 'spike_deployer_remote',
+						close = true,
+					})
 				end
 			}
-		},
-		consume = 0.3
+		}
+	},
+
+	["mdt"] = {
+		label = "MDT",
+		weight = 300,
+		stack = false,
+		consume = 0,
+		client = {
+			export = "drx_mdt.OpenMDT",
+		}
+	},
+
+	["phone"] = {
+		label = "Telemóvel",
+		weight = 300,
+		stack = false,
+		consume = 0,
+		client = {
+			export = "lb-phone.UsePhoneItem",
+			remove = function()
+				TriggerEvent("lb-phone:itemRemoved")
+			end,
+			add = function()
+				TriggerEvent("lb-phone:itemAdded")
+			end
+		}
+	},
+
+	['vehiclekeys'] = {
+		label = 'Vehicle Keys',
+		weight = 220,
+		stack = false,
+		close = true,
+		description = "Keys To A Car",
+	},
+
+	['keyring'] = {
+		label = 'Keyring',
+		weight = 220,
+		stack = false,
+		close = true,
+		description = "A keyring that holds car keys.",
+	},
+
+	['aftermarket_locks'] = {
+		label = 'Aftermarket Lock System',
+		weight = 220,
+		stack = false,
+		close = true,
+		description = "A locksystem to replace locks in a car.",
+	},
+
+	['lockpick'] = {
+					label = 'Lockpick',
+					weight = 850,
+					stack = true,
+					close = true,
+					description = "A mysterious device."
+	},
+
+	['advancedlockpick'] = {
+					label = 'Advanced Lockpick',
+					weight = 850,
+					stack = true,
+					close = true,
+					description = "A upgraded mysterious device."
+	},
+
+	['rental_paperwork'] = {
+			label = 'Rental Paperwork',
+			weight = 220,
+			stack = false,
+			close = true,
+			description = "Paperwork for a rental vehicle"
 	},
 
 	['bandage'] = {

@@ -4,12 +4,10 @@ import { selectBackpackInventory, closeBackpack } from '../../store/inventory';
 import { fetchNui } from '../../utils/fetchNui';
 
 interface Props {
-  onHeaderMouseDown?: (e: React.MouseEvent) => void;
-  isLocked?: boolean;
-  onToggleLock?: () => void;
 }
 
-const BackpackInventory: React.FC<Props> = ({ onHeaderMouseDown, isLocked, onToggleLock }) => {
+
+const BackpackInventory: React.FC<Props> = ({ }) => {
   const backpackInventory = useAppSelector(selectBackpackInventory);
   const dispatch = useAppDispatch();
 
@@ -21,9 +19,6 @@ const BackpackInventory: React.FC<Props> = ({ onHeaderMouseDown, isLocked, onTog
   return (
     <GridInventory
       inventory={backpackInventory}
-      onHeaderMouseDown={onHeaderMouseDown}
-      isLocked={isLocked}
-      onToggleLock={onToggleLock}
       onClose={handleClose}
     />
   );

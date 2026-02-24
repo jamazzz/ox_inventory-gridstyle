@@ -7,21 +7,16 @@ local function addDeferral(err)
     end)
 end
 
--- Do not modify this file at all. This isn't a "config" file. You want to change
--- resource settings? Use convars like you were told in the documentation.
--- You did read the docs, right? Probably not, if you're here.
--- https://coxdocs.dev/ox_inventory#config
-
 shared = {
     resource = GetCurrentResourceName(),
     framework = GetConvar('inventory:framework', 'esx'),
-    playerslots = GetConvarInt('inventory:slots', 50),
+    playerslots = GetConvarInt('inventory:slots', 150),
     playerweight = GetConvarInt('inventory:weight', 30000),
     target = GetConvarInt('inventory:target', 0) == 1,
     police = json.decode(GetConvar('inventory:police', '["police", "sheriff"]')),
     networkdumpsters = GetConvarInt('inventory:networkdumpsters', 0) == 1,
     gridwidth = GetConvarInt('inventory:gridwidth', 10),
-    gridheight = GetConvarInt('inventory:gridheight', 7),
+    gridheight = GetConvarInt('inventory:gridheight', 15),
     searchable = GetConvarInt('inventory:searchable', 0) == 1,
     slotratio = GetConvarInt('inventory:slotratio', 1),
 }

@@ -19,15 +19,14 @@ import InventoryContext from './InventoryContext';
 import { closeContextMenu } from '../../store/contextMenu';
 import Fade from '../utils/transitions/Fade';
 import UsefulControls from './UsefulControls';
-import { usePanelDrag } from '../../hooks/usePanelDrag';
 import { isSlotWithItem } from '../../helpers';
+import BodyDamage from './BodyDamage';
 import { validateMove } from '../../thunks/validateItems';
 import { fetchNui } from '../../utils/fetchNui';
 
 const Inventory: React.FC = () => {
   const [inventoryVisible, setInventoryVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
-  const [focusedPanel, setFocusedPanel] = useState<'left' | 'right'>('left');
   const dispatch = useAppDispatch();
   const rightInventory = useAppSelector(selectRightInventory);
   const hasRightInventory = useMemo(() => {
@@ -42,46 +41,6 @@ const Inventory: React.FC = () => {
     backpackInventory.type === 'backpack' && backpackInventory.id !== '',
     [backpackInventory.type, backpackInventory.id]
   );
-
-  const leftDrag = usePanelDrag('ox_inv_panel_left');
-  const rightDrag = usePanelDrag('ox_inv_panel_right');
-  const backpackDrag = usePanelDrag('ox_inv_panel_backpack');
-
-  useEffect(() => {
-    if (hasRightInventory && leftDrag.position && !rightDrag.position) {
-      const leftEl = leftDrag.panelRef.current;
-      if (leftEl) {
-        rightDrag.setPosition({
-          x: leftDrag.position.x + leftEl.offsetWidth + 16,
-          y: leftDrag.position.y,
-        });
-      }
-    }
-  }, [hasRightInventory]);
-
-  const handleLeftHeaderDown = useCallback((e: React.MouseEvent) => {
-    setFocusedPanel('left');
-    if (leftDrag.isLocked) return;
-    if (!leftDrag.position && rightDrag.panelRef.current && !rightDrag.position) {
-      rightDrag.capturePosition();
-    }
-    leftDrag.onMouseDown(e);
-  }, [leftDrag.onMouseDown, leftDrag.position, leftDrag.isLocked, rightDrag.position, rightDrag.capturePosition]);
-
-  const handleRightHeaderDown = useCallback((e: React.MouseEvent) => {
-    setFocusedPanel('right');
-    if (rightDrag.isLocked) return;
-    if (!rightDrag.position && leftDrag.panelRef.current && !leftDrag.position) {
-      leftDrag.capturePosition();
-    }
-    rightDrag.onMouseDown(e);
-  }, [rightDrag.onMouseDown, rightDrag.position, rightDrag.isLocked, leftDrag.position, leftDrag.capturePosition]);
-
-  const handleBackpackHeaderDown = useCallback((e: React.MouseEvent) => {
-    setFocusedPanel('left');
-    if (backpackDrag.isLocked) return;
-    backpackDrag.onMouseDown(e);
-  }, [backpackDrag.onMouseDown, backpackDrag.isLocked]);
 
   useNuiEvent<boolean>('setInventoryVisible', setInventoryVisible);
   useNuiEvent<false>('closeInventory', () => {
@@ -125,9 +84,9 @@ const Inventory: React.FC = () => {
       const clientOffset = monitor.getClientOffset();
       if (clientOffset) {
         const panels = [
-          leftDrag.panelRef.current,
-          backpackDrag.panelRef.current,
-          rightDrag.panelRef.current,
+          document.querySelector('.inventory-panel--left'),
+          document.querySelector('.inventory-panel--backpack'),
+          document.querySelector('.inventory-panel--right'),
         ];
         for (const panel of panels) {
           if (!panel) continue;
@@ -181,77 +140,35 @@ const Inventory: React.FC = () => {
     },
   }), [dispatch]);
 
-  const leftPositioned = leftDrag.position !== null;
-  const rightPositioned = rightDrag.position !== null;
-  const backpackPositioned = backpackDrag.position !== null;
-
   return (
     <>
       <UsefulControls infoVisible={infoVisible} setInfoVisible={setInfoVisible} />
       <Fade in={inventoryVisible}>
-        <div ref={groundDrop} className="inventory-wrapper">
-          <div
-            ref={leftDrag.panelRef}
-            className={`inventory-panel inventory-panel--left${leftPositioned ? ' inventory-panel--positioned' : ''}${leftDrag.isDragging ? ' inventory-panel--dragging' : ''}`}
-            style={leftPositioned ? {
-              left: leftDrag.position!.x,
-              top: leftDrag.position!.y,
-              zIndex: focusedPanel === 'left' ? 100 : 50,
-            } : {
-              zIndex: focusedPanel === 'left' ? 100 : 50,
-            }}
-            onMouseDown={() => setFocusedPanel('left')}
-          >
-            <LeftInventory
-              onHeaderMouseDown={handleLeftHeaderDown}
-              isLocked={leftDrag.isLocked}
-              onToggleLock={leftDrag.toggleLock}
-            />
+        <div ref={groundDrop} className="inventory-wrapper" style={{ position: 'relative' }}>
+          <div className="inventory-column">
+            <div className="inventory-panel inventory-panel--left">
+              <LeftInventory />
+            </div>
           </div>
-          <div
-            ref={backpackDrag.panelRef}
-            className={`inventory-panel inventory-panel--backpack${hasBackpack ? ' inventory-panel--active' : ''}${backpackPositioned ? ' inventory-panel--positioned' : ''}${backpackDrag.isDragging ? ' inventory-panel--dragging' : ''}`}
-            style={backpackPositioned ? {
-              left: backpackDrag.position!.x,
-              top: backpackDrag.position!.y,
-            } : {}}
-          >
-            {hasBackpack && (
-              <BackpackInventory
-                onHeaderMouseDown={handleBackpackHeaderDown}
-                isLocked={backpackDrag.isLocked}
-                onToggleLock={backpackDrag.toggleLock}
-              />
-            )}
+          <div className="inventory-column" style={{ height: '100%', justifyContent: 'center' }}>
+            <BodyDamage />
           </div>
-          <div
-            ref={rightDrag.panelRef}
-            className={`inventory-panel inventory-panel--right${hasRightInventory ? ' inventory-panel--active' : ''}${rightPositioned ? ' inventory-panel--positioned' : ''}${rightDrag.isDragging ? ' inventory-panel--dragging' : ''}`}
-            style={rightPositioned ? {
-              left: rightDrag.position!.x,
-              top: rightDrag.position!.y,
-              zIndex: focusedPanel === 'right' ? 100 : 50,
-            } : {
-              zIndex: focusedPanel === 'right' ? 100 : 50,
-            }}
-            onMouseDown={() => setFocusedPanel('right')}
-          >
-            {hasRightInventory && (
-              <RightInventory
-                onHeaderMouseDown={handleRightHeaderDown}
-                isLocked={rightDrag.isLocked}
-                onToggleLock={rightDrag.toggleLock}
-              />
-            )}
+          <div className="inventory-column" style={{ overflow: 'auto', display: 'flex', flexDirection: 'column', gap: hasBackpack && hasRightInventory ? '10px' : '0' }}>
+            <div className={`inventory-panel inventory-panel--backpack${hasBackpack ? ' inventory-panel--active' : ''}`}>
+              {hasBackpack && <BackpackInventory />}
+            </div>
+            <div className={`inventory-panel inventory-panel--right${hasRightInventory ? ' inventory-panel--active' : ''}`}>
+              {hasRightInventory && <RightInventory />}
+            </div>
           </div>
           <Tooltip />
           <InventoryContext />
-          <button className="useful-controls-button" onClick={() => setInfoVisible(true)}>
-            <svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 524 524">
-              <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" />
-            </svg>
-          </button>
         </div>
+        <button className="useful-controls-button" onClick={() => setInfoVisible(true)}>
+          <svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 524 524">
+            <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" />
+          </svg>
+        </button>
       </Fade>
       <InventoryHotbar />
     </>

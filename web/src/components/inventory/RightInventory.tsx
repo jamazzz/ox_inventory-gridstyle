@@ -5,25 +5,21 @@ import { useAppSelector } from '../../store';
 import { selectRightInventory } from '../../store/inventory';
 import { isGridInventory } from '../../helpers/gridUtils';
 
-interface Props {
-  onHeaderMouseDown?: (e: React.MouseEvent) => void;
-  isLocked?: boolean;
-  onToggleLock?: () => void;
-}
+interface Props {}
 
-const RightInventory: React.FC<Props> = ({ onHeaderMouseDown, isLocked, onToggleLock }) => {
+const RightInventory: React.FC<Props> = () => {
   const rightInventory = useAppSelector(selectRightInventory);
 
   if (rightInventory.type === 'crafting') {
-    return <CraftingInventory inventory={rightInventory} onHeaderMouseDown={onHeaderMouseDown} isLocked={isLocked} onToggleLock={onToggleLock} />;
+    return <CraftingInventory inventory={rightInventory} />;
   }
 
   const canSort = rightInventory.type !== 'player';
 
   return isGridInventory(rightInventory.type) ? (
-    <GridInventory inventory={rightInventory} onHeaderMouseDown={onHeaderMouseDown} isLocked={isLocked} onToggleLock={onToggleLock} canSort={canSort} />
+    <GridInventory inventory={rightInventory} canSort={canSort} />
   ) : (
-    <InventoryGrid inventory={rightInventory} onHeaderMouseDown={onHeaderMouseDown} isLocked={isLocked} onToggleLock={onToggleLock} />
+    <InventoryGrid inventory={rightInventory} />
   );
 };
 
